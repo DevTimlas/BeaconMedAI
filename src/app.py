@@ -6,10 +6,11 @@ import tempfile
 import markdown
 import shutil
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, request, jsonify, send_file, Response, stream_with_context, session
+from flask_session import Session
 from werkzeug.utils import secure_filename
-from auth.authentication import validate_login, ACTIVE_SESSIONS, SESSION_TIMEOUT
+from auth.authentication import validate_login
 from core.user_data import get_user_data, save_chat_history, download_chat_history
 from core.vectorstore import initialize_vectorstore_for_edition, current_vectorstore
 from processors.file_processors import process_file
@@ -35,7 +36,25 @@ from functools import partial
 import traceback
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+
+# FIXED SESSION CONFIGURATION FOR GUNICORN
+# Create a shared directory for all workers to access
+SHARED_SESSION_DIR = '/tmp/flask_sessions'  # Use absolute path for shared access
+if not os.path.exists(SHARED_SESSION_DIR):
+    os.makedirs(SHARED_SESSION_DIR, exist_ok=True)
+
+app.secret_key = os.environ.get('SECRET_KEY', 'your_fixed_secret_key_here_change_in_production')
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_FILE_DIR'] = SHARED_SESSION_DIR  # Shared directory
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+app.config['SESSION_FILE_THRESHOLD'] = 500
+app.config['SESSION_USE_SIGNER'] = True  # Add signature validation
+app.config['SESSION_KEY_PREFIX'] = 'flask_session:'  # Add prefix for identification
+app.config['SESSION_FILE_MODE'] = 0o600  # Secure file permissions
+
+# Initialize session AFTER all config is set
+Session(app)
 
 # Configuration
 UPLOAD_FOLDER = tempfile.mkdtemp()
@@ -43,14 +62,27 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB limit
 ALLOWED_EXTENSIONS = {'.zip', '.pdf', '.mp4', '.avi', '.mov', '.mkv', '.wav', '.mp3', '.jpg', '.jpeg', '.png'}
 
-# Global variables
+# Global variables - these need to be worker-safe
 AUTH_CREDENTIALS = {
     "michael rice": "4321",
     "Tim": "1038",
     "Tester": "Test012"
 }
-GENERATION_RUNNING = threading.Event()
-GENERATION_CANCELLED = threading.Event()
+
+# Use threading.local for worker-specific state
+worker_state = threading.local()
+
+def get_generation_running():
+    """Get worker-specific generation running state."""
+    if not hasattr(worker_state, 'generation_running'):
+        worker_state.generation_running = threading.Event()
+    return worker_state.generation_running
+
+def get_generation_cancelled():
+    """Get worker-specific generation cancelled state."""
+    if not hasattr(worker_state, 'generation_cancelled'):
+        worker_state.generation_cancelled = threading.Event()
+    return worker_state.generation_cancelled
 
 def allowed_file(filename):
     return os.path.splitext(filename)[1].lower() in ALLOWED_EXTENSIONS
@@ -109,26 +141,77 @@ def safe_save_uploaded_file(file, file_path, temp_files_to_cleanup):
         # Log file stream state
         logging.info(f"Attempting to save file: {file.filename}, stream_closed: {file.stream.closed if hasattr(file, 'stream') else 'N/A'}, stream_type: {type(file.stream) if hasattr(file, 'stream') else 'N/A'}")
         
-        # Check if stream is closed
-        if hasattr(file, 'stream') and file.stream.closed:
-            logging.error(f"File stream is already closed for {file.filename}")
-            return False, "File stream is closed", 0
-
-        # Save file directly to disk
-        file.save(file_path)
-        temp_files_to_cleanup.append(file_path)
-        
-        if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-            file_size = os.path.getsize(file_path) / 1024
-            logging.info(f"File saved successfully: {file_path}, size: {file_size:.2f} KB")
-            return True, None, file_size
-        else:
-            if os.path.exists(file_path):
-                os.remove(file_path)
-            if file_path in temp_files_to_cleanup:
-                temp_files_to_cleanup.remove(file_path)
-            logging.error(f"Failed to save file {file.filename}: Empty or invalid file")
-            return False, "Empty or invalid file", 0
+        # Handle closed streams by reading from the file object directly
+        try:
+            if hasattr(file, 'stream') and file.stream.closed:
+                # Try to read the file content from the file object itself
+                logging.warning(f"File stream is closed for {file.filename}, attempting alternative save method")
+                
+                # Reset stream position if possible
+                if hasattr(file, 'seek'):
+                    try:
+                        file.seek(0)
+                    except (OSError, ValueError):
+                        pass
+                
+                # Try to read file content directly
+                file_content = file.read()
+                if not file_content:
+                    logging.error(f"No content available for {file.filename}")
+                    return False, "No file content available", 0
+                
+                # Write content to file
+                with open(file_path, 'wb') as f:
+                    f.write(file_content)
+                
+                temp_files_to_cleanup.append(file_path)
+                
+                if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                    file_size = os.path.getsize(file_path) / 1024
+                    logging.info(f"File saved successfully via alternative method: {file_path}, size: {file_size:.2f} KB")
+                    return True, None, file_size
+                else:
+                    logging.error(f"Alternative save method failed for {file.filename}")
+                    return False, "Alternative save method failed", 0
+            else:
+                # Normal save method for open streams
+                file.save(file_path)
+                temp_files_to_cleanup.append(file_path)
+                
+                if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                    file_size = os.path.getsize(file_path) / 1024
+                    logging.info(f"File saved successfully: {file_path}, size: {file_size:.2f} KB")
+                    return True, None, file_size
+                else:
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                    if file_path in temp_files_to_cleanup:
+                        temp_files_to_cleanup.remove(file_path)
+                    logging.error(f"Failed to save file {file.filename}: Empty or invalid file")
+                    return False, "Empty or invalid file", 0
+                    
+        except Exception as save_error:
+            logging.error(f"Error during file save for {file.filename}: {str(save_error)}")
+            
+            # Final fallback: try to copy from werkzeug FileStorage
+            try:
+                import shutil
+                if hasattr(file, 'stream'):
+                    with open(file_path, 'wb') as dest_file:
+                        file.stream.seek(0)
+                        shutil.copyfileobj(file.stream, dest_file)
+                    
+                    temp_files_to_cleanup.append(file_path)
+                    
+                    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                        file_size = os.path.getsize(file_path) / 1024
+                        logging.info(f"File saved successfully via fallback method: {file_path}, size: {file_size:.2f} KB")
+                        return True, None, file_size
+                    
+            except Exception as fallback_error:
+                logging.error(f"Fallback save method also failed for {file.filename}: {str(fallback_error)}")
+            
+            return False, f"All save methods failed: {str(save_error)}", 0
                 
     except Exception as e:
         logging.error(f"Error saving file {file.filename}: {str(e)}")
@@ -275,9 +358,41 @@ async def collect_combine_results(reports, username, progress, cancelled):
         logging.error(f"Traceback: {traceback.format_exc()}")
         return [f"Error: {str(e)}"]
 
+# Session validation middleware
+@app.before_request
+def validate_session():
+    """Validate session before each request."""
+    if request.endpoint in ['login', 'serve_index', 'favicon']:
+        return  # Skip validation for these endpoints
+    
+    try:
+        # Log session info for debugging
+        worker_pid = os.getpid()
+        session_id = session.get('_id', 'N/A')
+        username = session.get('username')
+        
+        logging.debug(f"Worker {worker_pid}: Session validation - ID: {session_id}, User: {username}")
+        
+        # Force session to be marked as accessed/modified to ensure it's saved
+        if username:
+            session.permanent = True
+            session.modified = True
+            
+    except Exception as e:
+        logging.error(f"Error in session validation: {str(e)}")
+
 @app.route('/')
 def serve_index():
-    return send_file('index.html')
+    try:
+        worker_pid = os.getpid()
+        session_id = session.get('_id', 'N/A')
+        username = session.get('username', 'None')
+        
+        logging.info(f"Worker {worker_pid}: Index accessed - Session ID: {session_id}, User: {username}")
+        return send_file('index.html')
+    except Exception as e:
+        logging.error(f"Error serving index: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -287,9 +402,14 @@ def login():
         password = data.get('password')
         
         if username in AUTH_CREDENTIALS and AUTH_CREDENTIALS[username] == password and validate_login(username, password):
+            session.permanent = True
             session['username'] = username
-            ACTIVE_SESSIONS[username] = datetime.now()
-            logging.info(f"User {username} logged in")
+            session.modified = True  # Force session to be saved
+            
+            worker_pid = os.getpid()
+            session_id = session.get('_id', 'N/A')
+            
+            logging.info(f"Worker {worker_pid}: User {username} logged in - Session ID: {session_id}")
             return jsonify({'status': 'success', 'username': username})
         
         logging.error(f"Failed login attempt for username: {username}")
@@ -301,10 +421,14 @@ def login():
 @app.route('/api/logout', methods=['POST'])
 def logout():
     try:
-        username = session.pop('username', None)
-        if username in ACTIVE_SESSIONS:
-            del ACTIVE_SESSIONS[username]
-            logging.info(f"User {username} logged out")
+        username = session.get('username')
+        worker_pid = os.getpid()
+        session_id = session.get('_id', 'N/A')
+        
+        session.clear()  # Clear entire session
+        session.modified = True
+        
+        logging.info(f"Worker {worker_pid}: User {username} logged out - Session ID: {session_id}")
         return jsonify({'status': 'success', 'message': 'Logged out'})
     except Exception as e:
         logging.error(f"Error in logout: {str(e)}")
@@ -314,9 +438,17 @@ def logout():
 def get_username():
     try:
         username = session.get('username')
-        if username and username in ACTIVE_SESSIONS:
-            if (datetime.now() - ACTIVE_SESSIONS[username]).total_seconds() < SESSION_TIMEOUT:
-                return jsonify({'username': username})
+        worker_pid = os.getpid()
+        session_id = session.get('_id', 'N/A')
+        
+        logging.info(f"Worker {worker_pid}: Checking session - User: {username}, Session ID: {session_id}")
+        
+        if username:
+            # Refresh session
+            session.permanent = True
+            session.modified = True
+            return jsonify({'username': username})
+        
         return jsonify({'username': None})
     except Exception as e:
         logging.error(f"Error getting username: {str(e)}")
@@ -345,6 +477,14 @@ def generate_report():
         return jsonify({'error': 'Please log in first.'}), 401
     
     username = session['username']
+    worker_pid = os.getpid()
+    session_id = session.get('_id', 'N/A')
+    
+    logging.info(f"Worker {worker_pid}: Generating report for user: {username}, Session ID: {session_id}")
+    
+    GENERATION_RUNNING = get_generation_running()
+    GENERATION_CANCELLED = get_generation_cancelled()
+    
     GENERATION_RUNNING.set()
     GENERATION_CANCELLED.clear()
 
@@ -353,18 +493,45 @@ def generate_report():
         text_input = request.form.get('text', '')
         edition = request.form.get('edition', '4th Edition')
 
-        # Log file stream state for debugging
+        # Enhanced file validation and logging
+        valid_files = []
         for file in files:
             if file and file.filename:
-                logging.info(f"File: {file.filename}, stream_closed: {file.stream.closed if hasattr(file, 'stream') else 'N/A'}, stream_type: {type(file.stream) if hasattr(file, 'stream') else 'N/A'}")
+                logging.info(f"Received file: {file.filename}")
+                logging.info(f"File content type: {file.content_type}")
+                logging.info(f"File content length: {file.content_length}")
+                
+                # Check if file has content
+                if hasattr(file, 'content_length') and file.content_length == 0:
+                    logging.warning(f"File {file.filename} has zero content length")
+                    continue
+                
+                # Try to peek at file size
+                try:
+                    if hasattr(file, 'stream'):
+                        current_pos = file.stream.tell() if hasattr(file.stream, 'tell') else 0
+                        file.stream.seek(0, 2)  # Seek to end
+                        file_size = file.stream.tell()
+                        file.stream.seek(current_pos)  # Seek back
+                        logging.info(f"File {file.filename} actual size: {file_size} bytes")
+                        
+                        if file_size == 0:
+                            logging.warning(f"File {file.filename} is empty")
+                            continue
+                except Exception as e:
+                    logging.warning(f"Could not determine size for {file.filename}: {str(e)}")
+                
+                valid_files.append(file)
+            elif file:
+                logging.warning(f"File object received but no filename: {file}")
 
         initialize_vectorstore_for_edition(edition)
         user_data = get_user_data(username)
 
-        if not files and not text_input.strip():
+        if not valid_files and not text_input.strip():
             GENERATION_RUNNING.clear()
-            logging.error("No input provided for report generation")
-            return jsonify({'error': 'Please upload at least one document or provide text input.'}), 400
+            logging.error("No valid input provided for report generation")
+            return jsonify({'error': 'Please upload at least one valid document or provide text input.'}), 400
 
         def generate():
             all_reports = []
@@ -373,11 +540,11 @@ def generate_report():
             
             try:
                 # Handle file uploads
-                if files:
-                    for file in files:
-                        if file and file.filename and allowed_file(file.filename):
+                if valid_files:
+                    for file in valid_files:
+                        if allowed_file(file.filename):
                             filename = secure_filename(file.filename)
-                            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                            file_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{username}_{filename}")
                             
                             success, error_msg, file_size = safe_save_uploaded_file(file, file_path, temp_files_to_cleanup)
                             
@@ -389,7 +556,7 @@ def generate_report():
                                 yield f"data: {json.dumps({'report': f'Error uploading {filename}: {error_msg}'})}\n\n"
                                 return
                         else:
-                            error_msg = f"Invalid file: {file.filename if file and file.filename else 'Unknown file'}"
+                            error_msg = f"Invalid file type: {file.filename}"
                             logging.error(error_msg)
                             yield f"data: {json.dumps({'report': f'Error: {error_msg}'})}\n\n"
                             return
@@ -437,7 +604,7 @@ def generate_report():
                             return
                         
                         if text_report and not text_report.startswith("Error:"):
-                            if not files:
+                            if not valid_files:
                                 logging.info("Combining text report")
                                 partial_results = asyncio.run(collect_combine_results([text_report], username, DummyProgress(), GENERATION_CANCELLED))
                                 
@@ -532,6 +699,14 @@ def generate_rebuttal():
         return jsonify({'error': 'Please log in first.'}), 401
     
     username = session['username']
+    worker_pid = os.getpid()
+    session_id = session.get('_id', 'N/A')
+    
+    logging.info(f"Worker {worker_pid}: Generating rebuttal for user: {username}, Session ID: {session_id}")
+    
+    GENERATION_RUNNING = get_generation_running()
+    GENERATION_CANCELLED = get_generation_cancelled()
+    
     GENERATION_RUNNING.set()
     GENERATION_CANCELLED.clear()
 
@@ -704,11 +879,15 @@ def reset_reports():
     
     try:
         username = session['username']
+        worker_pid = os.getpid()
+        session_id = session.get('_id', 'N/A')
+        
         user_data = get_user_data(username)
         user_data.file_data = b""
         user_data.report_data = b""
         user_data.rebuttal_data = b""
-        logging.info(f"Reports reset for user: {username}")
+        
+        logging.info(f"Worker {worker_pid}: Reports reset for user: {username}, Session ID: {session_id}")
         return jsonify({'status': 'Reports reset'})
     except Exception as e:
         logging.error(f"Error resetting reports: {str(e)}")
@@ -721,6 +900,10 @@ def process_chat_files():
         return jsonify({'error': 'Please log in first.'}), 401
     
     username = session['username']
+    worker_pid = os.getpid()
+    session_id = session.get('_id', 'N/A')
+    
+    logging.info(f"Worker {worker_pid}: Processing chat files for user: {username}, Session ID: {session_id}")
     temp_files_to_cleanup = []
     
     try:
@@ -779,6 +962,10 @@ def handle_query():
         return jsonify({'response': 'Please log in first.'}), 401
     
     username = session['username']
+    worker_pid = os.getpid()
+    session_id = session.get('_id', 'N/A')
+    
+    logging.info(f"Worker {worker_pid}: Handling query for user: {username}, Session ID: {session_id}")
     
     try:
         data = request.json
@@ -930,10 +1117,14 @@ def download_chat_history_route():
     
     try:
         username = session['username']
+        worker_pid = os.getpid()
+        session_id = session.get('_id', 'N/A')
+        
         data = request.json
         history = data.get('history', [])
         temp_file_path = save_chat_history(history, username)
-        logging.info(f"Chat history downloaded for user: {username}")
+        
+        logging.info(f"Worker {worker_pid}: Chat history downloaded for user: {username}, Session ID: {session_id}")
         return send_file(temp_file_path, as_attachment=True, download_name='chat_history.txt')
     except Exception as e:
         logging.error(f"Error downloading chat history: {str(e)}")
@@ -952,9 +1143,16 @@ def cancel_generation():
         return jsonify({'error': 'Please log in first.'}), 401
     
     try:
+        GENERATION_CANCELLED = get_generation_cancelled()
+        GENERATION_RUNNING = get_generation_running()
+        
         GENERATION_CANCELLED.set()
         GENERATION_RUNNING.clear()
-        logging.info(f"Generation cancelled by user: {session['username']}")
+        
+        worker_pid = os.getpid()
+        session_id = session.get('_id', 'N/A')
+        
+        logging.info(f"Worker {worker_pid}: Generation cancelled by user: {session['username']}, Session ID: {session_id}")
         return jsonify({'status': 'Generation cancelled'})
     except Exception as e:
         logging.error(f"Error cancelling generation: {str(e)}")
@@ -966,6 +1164,9 @@ def generation_status():
         return jsonify({'error': 'Please log in first.'}), 401
     
     try:
+        GENERATION_RUNNING = get_generation_running()
+        GENERATION_CANCELLED = get_generation_cancelled()
+        
         return jsonify({
             'running': GENERATION_RUNNING.is_set(),
             'cancelled': GENERATION_CANCELLED.is_set()
@@ -990,11 +1191,25 @@ def handle_exception(e):
     return jsonify({'error': 'An unexpected error occurred'}), 500
 
 def cleanup_temp_files():
-    """Clean up temporary files on application shutdown."""
+    """Clean up temporary files and session files on application shutdown."""
     try:
         if os.path.exists(UPLOAD_FOLDER):
             shutil.rmtree(UPLOAD_FOLDER, ignore_errors=True)
             logging.info(f"Cleaned up upload folder: {UPLOAD_FOLDER}")
+        if os.path.exists(SHARED_SESSION_DIR):
+            # Only clean up session files older than 25 hours
+            import time
+            current_time = time.time()
+            for filename in os.listdir(SHARED_SESSION_DIR):
+                file_path = os.path.join(SHARED_SESSION_DIR, filename)
+                if os.path.isfile(file_path):
+                    file_age = current_time - os.path.getmtime(file_path)
+                    if file_age > 25 * 3600:  # 25 hours in seconds
+                        try:
+                            os.remove(file_path)
+                            logging.info(f"Cleaned up old session file: {file_path}")
+                        except Exception as e:
+                            logging.error(f"Error cleaning session file {file_path}: {str(e)}")
     except Exception as e:
         logging.error(f"Error cleaning up temp files: {str(e)}")
 

@@ -26,3 +26,4 @@ speechrecognition
 tiktoken
 timeout_decorator
 Werkzeug
+gunicorn

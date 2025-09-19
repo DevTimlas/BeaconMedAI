@@ -40,6 +40,7 @@ app.secret_key = os.urandom(24)
 # Configuration
 UPLOAD_FOLDER = tempfile.mkdtemp()
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB limit
 ALLOWED_EXTENSIONS = {'.zip', '.pdf', '.mp4', '.avi', '.mov', '.mkv', '.wav', '.mp3', '.jpg', '.jpeg', '.png'}
 
 # Global variables
@@ -101,131 +102,42 @@ class DummyProgress:
 
 def safe_save_uploaded_file(file, file_path, temp_files_to_cleanup):
     """
-    Safely save an uploaded FileStorage object with multiple fallback methods.
+    Save an uploaded FileStorage object to disk.
     Returns: (success: bool, error_message: str, file_size_kb: float)
     """
     try:
-        # Method 1: Try direct save first (most reliable for small files)
-        try:
-            file.save(file_path)
-            temp_files_to_cleanup.append(file_path)
-            
-            if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-                file_size = os.path.getsize(file_path) / 1024
-                logging.info(f"File saved successfully (direct): {file_path}, size: {file_size:.2f} KB")
-                return True, None, file_size
-            else:
-                # Clean up failed attempt
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-                if file_path in temp_files_to_cleanup:
-                    temp_files_to_cleanup.remove(file_path)
-                raise Exception("Direct save resulted in empty file")
+        # Log file stream state
+        logging.info(f"Attempting to save file: {file.filename}, stream_closed: {file.stream.closed if hasattr(file, 'stream') else 'N/A'}, stream_type: {type(file.stream) if hasattr(file, 'stream') else 'N/A'}")
+        
+        # Check if stream is closed
+        if hasattr(file, 'stream') and file.stream.closed:
+            logging.error(f"File stream is already closed for {file.filename}")
+            return False, "File stream is closed", 0
+
+        # Save file directly to disk
+        file.save(file_path)
+        temp_files_to_cleanup.append(file_path)
+        
+        if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+            file_size = os.path.getsize(file_path) / 1024
+            logging.info(f"File saved successfully: {file_path}, size: {file_size:.2f} KB")
+            return True, None, file_size
+        else:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            if file_path in temp_files_to_cleanup:
+                temp_files_to_cleanup.remove(file_path)
+            logging.error(f"Failed to save file {file.filename}: Empty or invalid file")
+            return False, "Empty or invalid file", 0
                 
-        except Exception as save_error:
-            logging.warning(f"Direct save failed: {str(save_error)}")
-            
-            # Method 2: Manual stream reading
-            try:
-                # Reset stream position if possible
-                if hasattr(file, 'stream') and hasattr(file.stream, 'seek'):
-                    file.stream.seek(0)
-                elif hasattr(file, 'seek'):
-                    file.seek(0)
-                    
-                # Read content
-                file_content = file.read()
-                
-                if not file_content:
-                    raise Exception("File content is empty after read")
-                
-                # Write manually
-                with open(file_path, 'wb') as f:
-                    f.write(file_content)
-                
-                temp_files_to_cleanup.append(file_path)
-                
-                if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-                    file_size = os.path.getsize(file_path) / 1024
-                    logging.info(f"File saved successfully (manual): {file_path}, size: {file_size:.2f} KB")
-                    return True, None, file_size
-                else:
-                    raise Exception("Manual save resulted in empty file")
-                    
-            except Exception as manual_error:
-                logging.warning(f"Manual save failed: {str(manual_error)}")
-                
-                # Method 3: BytesIO buffer approach
-                try:
-                    import io
-                    buffer = io.BytesIO()
-                    
-                    # Try different ways to access the stream
-                    stream_data = None
-                    if hasattr(file, 'stream') and hasattr(file.stream, 'read'):
-                        try:
-                            if hasattr(file.stream, 'seek'):
-                                file.stream.seek(0)
-                            stream_data = file.stream.read()
-                        except:
-                            pass
-                    
-                    if not stream_data and hasattr(file, 'read'):
-                        try:
-                            if hasattr(file, 'seek'):
-                                file.seek(0)
-                            stream_data = file.read()
-                        except:
-                            pass
-                    
-                    if not stream_data:
-                        raise Exception("Unable to read stream data")
-                    
-                    buffer.write(stream_data)
-                    buffer.seek(0)
-                    file_content = buffer.getvalue()
-                    
-                    if not file_content:
-                        raise Exception("Buffer content is empty")
-                    
-                    # Write to final destination
-                    with open(file_path, 'wb') as f:
-                        f.write(file_content)
-                    
-                    temp_files_to_cleanup.append(file_path)
-                    
-                    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-                        file_size = os.path.getsize(file_path) / 1024
-                        logging.info(f"File saved successfully (buffer): {file_path}, size: {file_size:.2f} KB")
-                        return True, None, file_size
-                    else:
-                        raise Exception("Buffer save resulted in empty file")
-                        
-                except Exception as buffer_error:
-                    error_details = {
-                        'direct_error': str(save_error),
-                        'manual_error': str(manual_error),
-                        'buffer_error': str(buffer_error),
-                        'file_type': str(type(file)),
-                        'has_stream': hasattr(file, 'stream'),
-                        'stream_type': str(type(file.stream)) if hasattr(file, 'stream') else 'N/A',
-                        'stream_closed': getattr(file.stream, 'closed', 'unknown') if hasattr(file, 'stream') else 'N/A'
-                    }
-                    
-                    logging.error(f"All save methods failed: {error_details}")
-                    
-                    # Clean up any partial files
-                    if os.path.exists(file_path):
-                        try:
-                            os.remove(file_path)
-                        except:
-                            pass
-                    
-                    return False, f"All save methods failed. Last error: {str(buffer_error)}", 0
-                    
     except Exception as e:
-        logging.error(f"Unexpected error in safe_save_uploaded_file: {str(e)}")
-        return False, f"Unexpected error: {str(e)}", 0
+        logging.error(f"Error saving file {file.filename}: {str(e)}")
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except:
+                pass
+        return False, f"Error saving file: {str(e)}", 0
 
 def safe_file_cleanup(file_paths):
     """Safely clean up files with error handling."""
@@ -245,14 +157,13 @@ async def collect_file_results(file_paths, username, progress, cancelled):
             logging.error("No file paths provided to process_file")
             return ["Error: No files provided"]
 
-        # Validate all files exist and are readable
         for file_path in file_paths:
             if not os.path.exists(file_path):
                 logging.error(f"File does not exist: {file_path}")
                 return [f"Error: File {file_path} does not exist"]
             
             try:
-                file_size = os.path.getsize(file_path) / 1024  # Size in KB
+                file_size = os.path.getsize(file_path) / 1024
                 logging.info(f"Processing file: {file_path}, size: {file_size:.2f} KB")
             except Exception as e:
                 logging.error(f"Error accessing file {file_path}: {str(e)}")
@@ -262,7 +173,6 @@ async def collect_file_results(file_paths, username, progress, cancelled):
             logging.error("process_file is not callable")
             return ["Error: process_file is not a function"]
 
-        # Call process_file with proper error handling
         try:
             result = process_file(file_paths, username, progress or DummyProgress(), cancelled)
             
@@ -270,7 +180,6 @@ async def collect_file_results(file_paths, username, progress, cancelled):
                 logging.error("process_file returned None")
                 return ["Error: process_file returned None"]
 
-            # Handle async generator
             if hasattr(result, '__aiter__'):
                 async for item in result:
                     if cancelled.is_set():
@@ -288,7 +197,6 @@ async def collect_file_results(file_paths, username, progress, cancelled):
                     results.append(str(item))
                     logging.info(f"Collected result: {str(item)[:100]}...")
             else:
-                # Handle non-async generator case
                 if isinstance(result, str):
                     if result == "Generation cancelled." or result.startswith("Error:"):
                         return [result]
@@ -330,7 +238,6 @@ async def collect_combine_results(reports, username, progress, cancelled):
             logging.error("get_combine_reports returned None")
             return ["Error: get_combine_reports returned None"]
         
-        # Handle async generator
         if hasattr(result, '__aiter__'):
             async for item in result:
                 if cancelled.is_set():
@@ -348,7 +255,6 @@ async def collect_combine_results(reports, username, progress, cancelled):
                 results.append(str(item))
                 logging.info(f"Collected combined result: {str(item)[:100]}...")
         else:
-            # Handle non-async case
             if isinstance(result, str):
                 if result == "Generation cancelled." or result.startswith("Error:"):
                     return [result]
@@ -447,6 +353,11 @@ def generate_report():
         text_input = request.form.get('text', '')
         edition = request.form.get('edition', '4th Edition')
 
+        # Log file stream state for debugging
+        for file in files:
+            if file and file.filename:
+                logging.info(f"File: {file.filename}, stream_closed: {file.stream.closed if hasattr(file, 'stream') else 'N/A'}, stream_type: {type(file.stream) if hasattr(file, 'stream') else 'N/A'}")
+
         initialize_vectorstore_for_edition(edition)
         user_data = get_user_data(username)
 
@@ -468,7 +379,6 @@ def generate_report():
                             filename = secure_filename(file.filename)
                             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                             
-                            # Use the robust file saving function
                             success, error_msg, file_size = safe_save_uploaded_file(file, file_path, temp_files_to_cleanup)
                             
                             if success:
@@ -527,7 +437,6 @@ def generate_report():
                             return
                         
                         if text_report and not text_report.startswith("Error:"):
-                            # If no files were uploaded, combine the text report
                             if not files:
                                 logging.info("Combining text report")
                                 partial_results = asyncio.run(collect_combine_results([text_report], username, DummyProgress(), GENERATION_CANCELLED))
@@ -571,15 +480,12 @@ def generate_report():
                     yield f"data: {json.dumps({'report': 'No reports generated.'})}\n\n"
                     return
 
-                # Get the final report
                 final_report_text = all_reports[-1]
                 
                 try:
-                    # Save report data
                     user_data.report_data = user_data.encrypt_data(final_report_text)
                     logging.info("Report data encrypted and saved")
                     
-                    # Create PDF with error handling
                     pdf_base64 = None
                     try:
                         pdf_buffer = create_pdf_from_markdown(final_report_text)
@@ -590,9 +496,7 @@ def generate_report():
                             logging.warning("PDF buffer is None")
                     except Exception as pdf_error:
                         logging.error(f"Error creating PDF: {str(pdf_error)}")
-                        # Continue without PDF
 
-                    # Final response
                     GENERATION_RUNNING.clear()
                     final_response = {'report': markdown.markdown(final_report_text)}
                     if pdf_base64:
@@ -612,7 +516,6 @@ def generate_report():
                 GENERATION_RUNNING.clear()
                 yield f"data: {json.dumps({'report': f'Error: {str(e)}'})}\n\n"
             finally:
-                # Always cleanup files
                 safe_file_cleanup(temp_files_to_cleanup)
 
         return Response(stream_with_context(generate()), content_type='text/event-stream')
@@ -637,6 +540,11 @@ def generate_rebuttal():
         text_input = request.form.get('text', '')
         edition = request.form.get('edition', '4th Edition')
 
+        # Log file stream state for debugging
+        for file in files:
+            if file and file.filename:
+                logging.info(f"File: {file.filename}, stream_closed: {file.stream.closed if hasattr(file, 'stream') else 'N/A'}, stream_type: {type(file.stream) if hasattr(file, 'stream') else 'N/A'}")
+
         initialize_vectorstore_for_edition(edition)
         user_data = get_user_data(username)
 
@@ -650,7 +558,6 @@ def generate_rebuttal():
             temp_files_to_cleanup = []
             
             try:
-                # Handle file uploads
                 if files:
                     file_paths = []
                     for file in files:
@@ -658,7 +565,6 @@ def generate_rebuttal():
                             filename = secure_filename(file.filename)
                             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                             
-                            # Use the robust file saving function
                             success, error_msg, file_size = safe_save_uploaded_file(file, file_path, temp_files_to_cleanup)
                             
                             if success:
@@ -674,7 +580,6 @@ def generate_rebuttal():
                             yield f"data: {json.dumps({'rebuttal': f'Error: {error_msg}'})}\n\n"
                             return
 
-                    # Handle file uploads for rebuttal
                     if file_paths:
                         logging.info(f"Processing {len(file_paths)} files for rebuttal")
                         partial_results = asyncio.run(collect_file_results(file_paths, username, DummyProgress(), GENERATION_CANCELLED))
@@ -699,7 +604,6 @@ def generate_rebuttal():
                                 logging.error(f"Error converting rebuttal to markdown: {str(e)}")
                                 yield f"data: {json.dumps({'rebuttal': rebuttal_text})}\n\n"
 
-                # Handle text input for rebuttal
                 if text_input.strip():
                     try:
                         moderation_result = check_moderation(text_input)
@@ -737,23 +641,19 @@ def generate_rebuttal():
                         yield f"data: {json.dumps({'rebuttal': f'Error processing text: {str(e)}'})}\n\n"
                         return
 
-                # Final rebuttal processing
                 if not all_responses:
                     GENERATION_RUNNING.clear()
                     yield f"data: {json.dumps({'rebuttal': 'No rebuttal generated.'})}\n\n"
                     return
 
-                # Get final rebuttal text
                 final_rebuttal_text = user_data.decrypt_data(user_data.rebuttal_data) if user_data.rebuttal_data else all_responses[-1]
                 
                 if final_rebuttal_text and final_rebuttal_text != "Generation cancelled.":
                     try:
-                        # Save rebuttal data if from new generation
                         if not user_data.rebuttal_data and all_responses:
                             user_data.rebuttal_data = user_data.encrypt_data(all_responses[-1])
                             logging.info("Rebuttal data encrypted and saved")
                         
-                        # Create PDF with error handling
                         pdf_base64 = None
                         try:
                             pdf_buffer = create_pdf_from_markdown(final_rebuttal_text)
@@ -764,9 +664,7 @@ def generate_rebuttal():
                                 logging.warning("Rebuttal PDF buffer is None")
                         except Exception as pdf_error:
                             logging.error(f"Error creating rebuttal PDF: {str(pdf_error)}")
-                            # Continue without PDF
 
-                        # Final response
                         GENERATION_RUNNING.clear()
                         final_response = {'rebuttal': markdown.markdown(final_rebuttal_text)}
                         if pdf_base64:
@@ -789,7 +687,6 @@ def generate_rebuttal():
                 GENERATION_RUNNING.clear()
                 yield f"data: {json.dumps({'rebuttal': f'Error: {str(e)}'})}\n\n"
             finally:
-                # Always cleanup files
                 safe_file_cleanup(temp_files_to_cleanup)
 
         return Response(stream_with_context(generate()), content_type='text/event-stream')
@@ -831,12 +728,16 @@ def process_chat_files():
         user_data = get_user_data(username)
         all_pdf_content = []
 
+        # Log file stream state for debugging
+        for file in files:
+            if file and file.filename:
+                logging.info(f"File: {file.filename}, stream_closed: {file.stream.closed if hasattr(file, 'stream') else 'N/A'}, stream_type: {type(file.stream) if hasattr(file, 'stream') else 'N/A'}")
+
         for file in files:
             if file and file.filename and file.filename.lower().endswith('.pdf'):
                 filename = secure_filename(file.filename)
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 
-                # Use the robust file saving function
                 success, error_msg, file_size = safe_save_uploaded_file(file, file_path, temp_files_to_cleanup)
                 
                 if success:
@@ -869,7 +770,6 @@ def process_chat_files():
         logging.error(f"Error in process_chat_files: {str(e)}")
         return jsonify({'error': f'Error processing files: {str(e)}'}), 500
     finally:
-        # Always cleanup files
         safe_file_cleanup(temp_files_to_cleanup)
 
 @app.route('/api/handle_query', methods=['POST'])
@@ -897,7 +797,6 @@ def handle_query():
 
         def generate():
             try:
-                # Check for similar previous queries
                 conversation_history = user_data.memory.load_memory_variables({})["history"]
                 similarity_threshold = 0.6
                 
@@ -917,14 +816,12 @@ def handle_query():
                             yield f"data: {json.dumps({'response': ai_message.content})}\n\n"
                             return
 
-                # Construct prompt with context
                 prompt = (
                     f"You are BeaconMedicalAi AMA, a medical and legal assistant.\n\n"
                     f"The user {username} asked: {query}\n\n"
                     f"Provide answer according to the AMA Guides.\n"
                 )
 
-                # Add user data context
                 try:
                     if user_data.file_data:
                         file_content = user_data.decrypt_data(user_data.file_data)
@@ -943,7 +840,6 @@ def handle_query():
                 except Exception as e:
                     logging.error(f"Error decrypting user data: {str(e)}")
 
-                # Retrieve relevant AMA content
                 try:
                     if current_vectorstore:
                         retrieved_docs = current_vectorstore.similarity_search(query, k=2)
@@ -961,7 +857,6 @@ def handle_query():
                     - Be specific and precise, provide AMA references for medical queries.
                 """
 
-                # Add conversation history
                 if history:
                     try:
                         history_text = "\n\n".join([f"User: {msg[0]}\nBot: {msg[1]}" for msg in history])
@@ -969,7 +864,6 @@ def handle_query():
                     except Exception as e:
                         logging.error(f"Error processing conversation history: {str(e)}")
 
-                # Stream response with timeout handling
                 response = ""
                 chunk_count = 0
 
@@ -985,11 +879,9 @@ def handle_query():
                         logging.error(f"Error initializing client: {str(e)}")
                         raise
 
-                # Use concurrent.futures for timeout
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                     future = executor.submit(stream_client)
                     try:
-                        # Set timeout to 30 seconds
                         stream = future.result(timeout=30)
                         
                         for chunk in stream:
@@ -998,7 +890,7 @@ def handle_query():
                                 response += chunk_text
                                 chunk_count += 1
                                 
-                                if chunk_count % 5 == 0:  # Stream every 5 chunks
+                                if chunk_count % 5 == 0:
                                     yield f"data: {json.dumps({'response': response})}\n\n"
                             except Exception as e:
                                 logging.error(f"Error processing chunk: {str(e)}")
@@ -1006,7 +898,6 @@ def handle_query():
                         
                         yield f"data: {json.dumps({'response': response})}\n\n"
 
-                        # Save to memory
                         try:
                             user_data.memory.save_context({"input": query}, {"output": response})
                             logging.info("Conversation saved to memory")
@@ -1057,7 +948,6 @@ def favicon():
 
 @app.route('/api/cancel_generation', methods=['POST'])
 def cancel_generation():
-    """Cancel ongoing generation process."""
     if 'username' not in session:
         return jsonify({'error': 'Please log in first.'}), 401
     
@@ -1072,7 +962,6 @@ def cancel_generation():
 
 @app.route('/api/generation_status', methods=['GET'])
 def generation_status():
-    """Get current generation status."""
     if 'username' not in session:
         return jsonify({'error': 'Please log in first.'}), 401
     
@@ -1100,7 +989,6 @@ def handle_exception(e):
     logging.error(f"Traceback: {traceback.format_exc()}")
     return jsonify({'error': 'An unexpected error occurred'}), 500
 
-# Cleanup function for application shutdown
 def cleanup_temp_files():
     """Clean up temporary files on application shutdown."""
     try:

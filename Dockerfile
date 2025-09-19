@@ -16,6 +16,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application code
 COPY . .
 
+# Change into src directory for running the app
+WORKDIR /app/src
+
 # Expose Flask port
 EXPOSE 80
 
@@ -24,4 +27,4 @@ ENV PYTHONUNBUFFERED=1 \
     PORT=80
 
 # Run Flask app in production with Gunicorn
-CMD ["python", "src/app.py"]
+CMD ["gunicorn", "--workers", "4", "--timeout", "120", "--bind", "0.0.0.0:80", "app:app"]

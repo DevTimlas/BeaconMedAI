@@ -580,4 +580,5 @@ def favicon():
 
 if __name__ == '__main__':
     initialize_vectorstore_for_edition("4th Edition")
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 80))
+    app.run(host="0.0.0.0", port=port)

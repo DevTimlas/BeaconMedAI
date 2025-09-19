@@ -99,6 +99,134 @@ class DummyProgress:
         logging.info(f"Processing {desc} with {len(iterable) if total is None else total} items")
         return iterable
 
+def safe_save_uploaded_file(file, file_path, temp_files_to_cleanup):
+    """
+    Safely save an uploaded FileStorage object with multiple fallback methods.
+    Returns: (success: bool, error_message: str, file_size_kb: float)
+    """
+    try:
+        # Method 1: Try direct save first (most reliable for small files)
+        try:
+            file.save(file_path)
+            temp_files_to_cleanup.append(file_path)
+            
+            if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                file_size = os.path.getsize(file_path) / 1024
+                logging.info(f"File saved successfully (direct): {file_path}, size: {file_size:.2f} KB")
+                return True, None, file_size
+            else:
+                # Clean up failed attempt
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                if file_path in temp_files_to_cleanup:
+                    temp_files_to_cleanup.remove(file_path)
+                raise Exception("Direct save resulted in empty file")
+                
+        except Exception as save_error:
+            logging.warning(f"Direct save failed: {str(save_error)}")
+            
+            # Method 2: Manual stream reading
+            try:
+                # Reset stream position if possible
+                if hasattr(file, 'stream') and hasattr(file.stream, 'seek'):
+                    file.stream.seek(0)
+                elif hasattr(file, 'seek'):
+                    file.seek(0)
+                    
+                # Read content
+                file_content = file.read()
+                
+                if not file_content:
+                    raise Exception("File content is empty after read")
+                
+                # Write manually
+                with open(file_path, 'wb') as f:
+                    f.write(file_content)
+                
+                temp_files_to_cleanup.append(file_path)
+                
+                if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                    file_size = os.path.getsize(file_path) / 1024
+                    logging.info(f"File saved successfully (manual): {file_path}, size: {file_size:.2f} KB")
+                    return True, None, file_size
+                else:
+                    raise Exception("Manual save resulted in empty file")
+                    
+            except Exception as manual_error:
+                logging.warning(f"Manual save failed: {str(manual_error)}")
+                
+                # Method 3: BytesIO buffer approach
+                try:
+                    import io
+                    buffer = io.BytesIO()
+                    
+                    # Try different ways to access the stream
+                    stream_data = None
+                    if hasattr(file, 'stream') and hasattr(file.stream, 'read'):
+                        try:
+                            if hasattr(file.stream, 'seek'):
+                                file.stream.seek(0)
+                            stream_data = file.stream.read()
+                        except:
+                            pass
+                    
+                    if not stream_data and hasattr(file, 'read'):
+                        try:
+                            if hasattr(file, 'seek'):
+                                file.seek(0)
+                            stream_data = file.read()
+                        except:
+                            pass
+                    
+                    if not stream_data:
+                        raise Exception("Unable to read stream data")
+                    
+                    buffer.write(stream_data)
+                    buffer.seek(0)
+                    file_content = buffer.getvalue()
+                    
+                    if not file_content:
+                        raise Exception("Buffer content is empty")
+                    
+                    # Write to final destination
+                    with open(file_path, 'wb') as f:
+                        f.write(file_content)
+                    
+                    temp_files_to_cleanup.append(file_path)
+                    
+                    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                        file_size = os.path.getsize(file_path) / 1024
+                        logging.info(f"File saved successfully (buffer): {file_path}, size: {file_size:.2f} KB")
+                        return True, None, file_size
+                    else:
+                        raise Exception("Buffer save resulted in empty file")
+                        
+                except Exception as buffer_error:
+                    error_details = {
+                        'direct_error': str(save_error),
+                        'manual_error': str(manual_error),
+                        'buffer_error': str(buffer_error),
+                        'file_type': str(type(file)),
+                        'has_stream': hasattr(file, 'stream'),
+                        'stream_type': str(type(file.stream)) if hasattr(file, 'stream') else 'N/A',
+                        'stream_closed': getattr(file.stream, 'closed', 'unknown') if hasattr(file, 'stream') else 'N/A'
+                    }
+                    
+                    logging.error(f"All save methods failed: {error_details}")
+                    
+                    # Clean up any partial files
+                    if os.path.exists(file_path):
+                        try:
+                            os.remove(file_path)
+                        except:
+                            pass
+                    
+                    return False, f"All save methods failed. Last error: {str(buffer_error)}", 0
+                    
+    except Exception as e:
+        logging.error(f"Unexpected error in safe_save_uploaded_file: {str(e)}")
+        return False, f"Unexpected error: {str(e)}", 0
+
 def safe_file_cleanup(file_paths):
     """Safely clean up files with error handling."""
     for file_path in file_paths:
@@ -340,39 +468,15 @@ def generate_report():
                             filename = secure_filename(file.filename)
                             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                             
-                            try:
-                                # Ensure file stream is at the beginning and not closed
-                                if hasattr(file, 'stream'):
-                                    file.stream.seek(0)
-                                    
-                                # Read file content into memory first to avoid I/O issues
-                                file_content = file.read()
-                                
-                                if not file_content:
-                                    logging.error(f"File {filename} appears to be empty")
-                                    yield f"data: {json.dumps({'report': f'Error: File {filename} is empty'})}\n\n"
-                                    return
-                                
-                                # Write content to file using binary mode
-                                with open(file_path, 'wb') as f:
-                                    f.write(file_content)
-                                
-                                temp_files_to_cleanup.append(file_path)
-                                
-                                if os.path.exists(file_path):
-                                    file_size = os.path.getsize(file_path) / 1024
-                                    logging.info(f"Saved file: {file_path}, size: {file_size:.2f} KB")
-                                    file_paths.append(file_path)
-                                else:
-                                    logging.error(f"File was not saved properly: {file_path}")
-                                    yield f"data: {json.dumps({'report': f'Error: Failed to save file {filename}'})}\n\n"
-                                    return
-                                    
-                            except Exception as e:
-                                logging.error(f"Error saving file {filename}: {str(e)}")
-                                logging.error(f"File object type: {type(file)}")
-                                logging.error(f"Has stream attribute: {hasattr(file, 'stream')}")
-                                yield f"data: {json.dumps({'report': f'Error saving file {filename}: {str(e)}'})}\n\n"
+                            # Use the robust file saving function
+                            success, error_msg, file_size = safe_save_uploaded_file(file, file_path, temp_files_to_cleanup)
+                            
+                            if success:
+                                file_paths.append(file_path)
+                                logging.info(f"Successfully uploaded: {filename} ({file_size:.2f} KB)")
+                            else:
+                                logging.error(f"Failed to upload {filename}: {error_msg}")
+                                yield f"data: {json.dumps({'report': f'Error uploading {filename}: {error_msg}'})}\n\n"
                                 return
                         else:
                             error_msg = f"Invalid file: {file.filename if file and file.filename else 'Unknown file'}"
@@ -554,39 +658,15 @@ def generate_rebuttal():
                             filename = secure_filename(file.filename)
                             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                             
-                            try:
-                                # Ensure file stream is at the beginning and not closed
-                                if hasattr(file, 'stream'):
-                                    file.stream.seek(0)
-                                    
-                                # Read file content into memory first to avoid I/O issues
-                                file_content = file.read()
-                                
-                                if not file_content:
-                                    logging.error(f"Rebuttal file {filename} appears to be empty")
-                                    yield f"data: {json.dumps({'rebuttal': f'Error: File {filename} is empty'})}\n\n"
-                                    return
-                                
-                                # Write content to file using binary mode
-                                with open(file_path, 'wb') as f:
-                                    f.write(file_content)
-                                
-                                temp_files_to_cleanup.append(file_path)
-                                
-                                if os.path.exists(file_path):
-                                    file_size = os.path.getsize(file_path) / 1024
-                                    logging.info(f"Saved rebuttal file: {file_path}, size: {file_size:.2f} KB")
-                                    file_paths.append(file_path)
-                                else:
-                                    logging.error(f"Rebuttal file was not saved properly: {file_path}")
-                                    yield f"data: {json.dumps({'rebuttal': f'Error: Failed to save file {filename}'})}\n\n"
-                                    return
-                                    
-                            except Exception as e:
-                                logging.error(f"Error saving rebuttal file {filename}: {str(e)}")
-                                logging.error(f"File object type: {type(file)}")
-                                logging.error(f"Has stream attribute: {hasattr(file, 'stream')}")
-                                yield f"data: {json.dumps({'rebuttal': f'Error saving file {filename}: {str(e)}'})}\n\n"
+                            # Use the robust file saving function
+                            success, error_msg, file_size = safe_save_uploaded_file(file, file_path, temp_files_to_cleanup)
+                            
+                            if success:
+                                file_paths.append(file_path)
+                                logging.info(f"Successfully uploaded rebuttal file: {filename} ({file_size:.2f} KB)")
+                            else:
+                                logging.error(f"Failed to upload rebuttal file {filename}: {error_msg}")
+                                yield f"data: {json.dumps({'rebuttal': f'Error uploading {filename}: {error_msg}'})}\n\n"
                                 return
                         else:
                             error_msg = f"Invalid file: {file.filename if file and file.filename else 'Unknown file'}"
@@ -756,28 +836,13 @@ def process_chat_files():
                 filename = secure_filename(file.filename)
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 
-                try:
-                    # Ensure file stream is at the beginning and not closed
-                    if hasattr(file, 'stream'):
-                        file.stream.seek(0)
-                        
-                    # Read file content into memory first to avoid I/O issues
-                    file_content = file.read()
+                # Use the robust file saving function
+                success, error_msg, file_size = safe_save_uploaded_file(file, file_path, temp_files_to_cleanup)
+                
+                if success:
+                    logging.info(f"Successfully uploaded chat file: {filename} ({file_size:.2f} KB)")
                     
-                    if not file_content:
-                        logging.error(f"Chat file {filename} appears to be empty")
-                        continue
-                    
-                    # Write content to file using binary mode
-                    with open(file_path, 'wb') as f:
-                        f.write(file_content)
-                    
-                    temp_files_to_cleanup.append(file_path)
-                    
-                    if os.path.exists(file_path):
-                        file_size = os.path.getsize(file_path) / 1024
-                        logging.info(f"Processing chat file: {file_path}, size: {file_size:.2f} KB")
-                        
+                    try:
                         pdf_content = get_uploaded_pdf_content(file_path, username, DummyProgress())
                         if pdf_content is None:
                             logging.error(f"Failed to process PDF: {file_path}")
@@ -785,13 +850,11 @@ def process_chat_files():
                         
                         all_pdf_content.append(pdf_content)
                         logging.info(f"Successfully processed PDF: {file_path}")
-                    else:
-                        logging.error(f"Chat file was not saved properly: {file_path}")
-                        
-                except Exception as e:
-                    logging.error(f"Error processing chat file {filename}: {str(e)}")
-                    logging.error(f"File object type: {type(file)}")
-                    logging.error(f"Has stream attribute: {hasattr(file, 'stream')}")
+                    except Exception as e:
+                        logging.error(f"Error processing PDF content from {filename}: {str(e)}")
+                        continue
+                else:
+                    logging.error(f"Failed to upload chat file {filename}: {error_msg}")
                     continue
 
         if all_pdf_content:

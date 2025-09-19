@@ -1,0 +1,7 @@
+2025-09-19 11:10:41.971 | INFO     | __main__:main:13 - Starting BeaconMedicalAi AMA application
+2025-09-19 11:10:41.971 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 11:10:41.972 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 11:10:42.406 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 11:10:42.406 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 11:11:02.388 | INFO     | auth.authentication:validate_login:30 - Successful login for user: Tim
+2025-09-19 11:11:27.272 | INFO     | ui.gradio_interface:update_preview:405 - Previewing 0 images and 1 PDF

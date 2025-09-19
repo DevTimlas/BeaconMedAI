@@ -1,0 +1,34 @@
+2025-08-15 11:54:01.619 | INFO     | __main__:main:13 - Starting BeaconMedicalAi AMA application
+2025-08-15 11:54:01.619 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-08-15 11:54:01.619 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-08-15 11:54:01.842 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-08-15 11:54:01.843 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-08-15 11:54:09.974 | INFO     | BeaconMedAI.auth.authentication:validate_login:33 - Successful login for user: Tim
+2025-08-15 11:54:24.292 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-08-15 11:54:24.297 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-08-15 11:54:24.464 | INFO     | BeaconMedAI.core.user_data:__init__:36 - 
+==================================================
+NEW USER SESSION CREATED
+Username: Tim
+User ID: fdffce53-2507-4aea-9a53-6a1b1fc221a1
+==================================================
+
+2025-08-15 11:54:24.465 | INFO     | BeaconMedAI.core.user_data:get_user_data:97 - Created new user data for: Tim
+2025-08-15 11:54:24.485 | INFO     | BeaconMedAI.processors.file_processors:process_file:33 - User Tim started processing 1 files
+2025-08-15 11:54:24.486 | INFO     | BeaconMedAI.core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-08-15 11:54:24.486 | INFO     | BeaconMedAI.processors.file_processors:process_single_file:52 - Processing file /private/var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/gradio/9853adc70cf79735bb12a4e45f8145aa628d78f2f60ea8af7b816db04666c13f/AMA Sample Medical Report 1.pdf (1/1)
+2025-08-15 11:54:24.488 | INFO     | BeaconMedAI.processors.file_processors:get_report_from_pdf:107 - Loading PDF /private/var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/gradio/9853adc70cf79735bb12a4e45f8145aa628d78f2f60ea8af7b816db04666c13f/AMA Sample Medical Report 1.pdf for user Tim
+2025-08-15 11:54:24.660 | INFO     | BeaconMedAI.core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-08-15 11:54:24.660 | INFO     | BeaconMedAI.generators.report_generator:get_ama_impairment_report:55 - Generating impairment report for user Tim
+2025-08-15 11:54:24.660 | INFO     | BeaconMedAI.core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-08-15 11:54:28.618 | INFO     | BeaconMedAI.utils.helpers:get_metadata_filter:267 - Starting metadata filter generation
+2025-08-15 11:54:31.578 | DEBUG    | BeaconMedAI.utils.helpers:get_metadata_filter:289 - Extracted 20 terms: ['workplace injury', 'traumatic brain injury', 'symptoms', 'headaches', 'dizziness', 'cognitive difficulties', 'mri', 'neurological assessment', 'fractured right clavicle', 'misalignment', 'x-ray', 'persistent pain', 'limited range of motion', 'lumbar disc herniation', 'disc protrusion', 'pain', 'radiating', 'lower extremities', 'physical therapy', 'pain management']
+2025-08-15 11:54:31.580 | ERROR    | BeaconMedAI.utils.helpers:get_metadata_filter:317 - Vector store query failed: 'NoneType' object has no attribute 'similarity_search'
+2025-08-15 11:54:31.580 | INFO     | BeaconMedAI.utils.helpers:get_metadata_filter:325 - No chapters found. Using term-based filter.
+2025-08-15 11:54:31.580 | INFO     | BeaconMedAI.utils.helpers:get_metadata_filter:327 - Term-based filter: {'terms': ['workplace injury', 'traumatic brain injury', 'symptoms', 'headaches', 'dizziness', 'cognitive difficulties', 'mri', 'neurological assessment', 'fractured right clavicle', 'misalignment', 'x-ray', 'persistent pain', 'limited range of motion', 'lumbar disc herniation', 'disc protrusion', 'pain', 'radiating', 'lower extremities', 'physical therapy', 'pain management']}
+2025-08-15 11:54:31.580 | INFO     | BeaconMedAI.generators.report_generator:get_ama_impairment_report:98 - Using term-based query: workplace injury traumatic brain injury symptoms headaches dizziness cognitive difficulties mri neurological assessment fractured right clavicle misalignment x-ray persistent pain limited range of motion lumbar disc herniation disc protrusion pain radiating lower extremities physical therapy pain management
+2025-08-15 11:54:31.581 | INFO     | BeaconMedAI.generators.report_generator:get_ama_impairment_report:102 - Retrieving AMA content with k=3, fetch_k=15, lambda_mult=0.5 based on 112 unique words
+2025-08-15 11:54:33.575 | INFO     | BeaconMedAI.generators.report_generator:get_ama_impairment_report:107 - Initially retrieved 5 documents
+2025-08-15 11:54:35.664 | INFO     | BeaconMedAI.generators.report_generator:get_ama_impairment_report:111 - Reranked to 3 documents
+2025-08-15 11:54:36.612 | ERROR    | BeaconMedAI.utils.web_utils:web_search_url:113 - Web search failed: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2025-08-15 11:54:36.616 | ERROR    | BeaconMedAI.ui.gradio_interface:generate_and_display_report:207 - Error in report generation: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}

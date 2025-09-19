@@ -1,0 +1,4 @@
+2025-08-15 11:10:18.822 | INFO     | __main__:main:13 - Starting BeaconMedicalAi AMA application
+2025-08-15 11:10:18.945 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:170 - Initializing vectorstore for 4th Edition
+2025-08-15 11:10:18.946 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore:164 - Failed to initialize vectorstore for 4th Edition: PDF file not found: /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/guides-to-the-evaluation-of-permanent-impairment_4th.pdf
+2025-08-15 11:10:18.946 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:178 - Failed to initialize vectorstore for 4th Edition

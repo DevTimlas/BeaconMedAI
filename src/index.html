@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeaconMedicalAi AMA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --danger-color: #dc2626;
+            --warning-color: #d97706;
+            --surface-color: #ffffff;
+            --background-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --border-radius: 12px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+            padding: 24px;
+            gap: 24px;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            padding: 32px;
+            height: fit-content;
+            min-height: calc(100vh - 48px);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 24px;
+        }
+        
+        .sidebar-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .sidebar-header h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 8px 0;
+        }
+        
+        .welcome-msg {
+            font-size: 14px;
+            color: var(--text-secondary);
+            background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 24px;
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Form Groups */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: var(--surface-color);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+            outline: none;
+        }
+        
+        .form-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        /* Collapsible Text Input */
+        .text-input-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        
+        .text-input-toggle:hover {
+            color: var(--primary-color);
+        }
+        
+        .text-input-toggle i {
+            transition: transform 0.2s ease;
+        }
+        
+        .text-input-toggle.active i {
+            transform: rotate(90deg);
+        }
+        
+        .text-input-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .text-input-content.show {
+            max-height: 200px;
+            margin-top: 16px;
+        }
+        
+        /* Button Styles */
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 12px 24px;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-outline-primary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* Main Content */
+        .main-content {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            padding: 32px;
+            min-height: calc(100vh - 48px);
+            border: 1px solid var(--border-color);
+        }
+        
+        #report-preview {
+            max-height: none;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            background: #fefefe;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+        
+        /* Progress Styles */
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--border-color);
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color) 0%, #3b82f6 100%);
+            transition: width 0.3s ease;
+        }
+        
+        /* Alert Styles */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 16px;
+            font-size: 14px;
+        }
+        
+        .alert-danger {
+            background: #fef2f2;
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        /* Chatbot Styles */
+        .chatbot-popup {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 420px;
+            height: 600px;
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            z-index: 1050;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chatbot-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #3b82f6 100%);
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .chatbot-header h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            flex-grow: 1;
+        }
+        
+        .chatbot-header .download-btn {
+            margin-left: 16px;
+            padding: 6px 12px;
+            font-size: 12px;
+            min-width: auto;
+        }
+        
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+        
+        .chatbot-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .chatbot-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 24px;
+        }
+        
+        .chatbot-history {
+            flex: 1;
+            overflow-y: auto;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            background: #fafafa;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .chat-message {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .chatbot-input-group {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
+        .chatbot-input-group input {
+            flex: 1;
+        }
+        
+        .chatbot-input-group .btn {
+            padding: 12px 16px;
+            min-width: 60px;
+        }
+        
+        .chatbot-toggle-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            z-index: 1049;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chatbot-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+        
+        .chatbot-toggle-btn.active {
+            display: none;
+        }
+        
+        /* Sample Prompts Styles */
+        .sample-prompts {
+            padding: 12px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .sample-prompts .btn {
+            font-size: 12px;
+            padding: 6px 12px;
+            margin: 2px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            flex-wrap: wrap;
+        }
+        
+        .sample-prompts .btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .sample-prompts-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        /* Modal Styles */
+        .modal-content {
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 24px 32px 20px 32px;
+        }
+        
+        .modal-body {
+            padding: 24px 32px;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 20px 32px 24px 32px;
+        }
+        
+        /* Loading Spinner */
+        .spinner-border-sm {
+            width: 16px;
+            height: 16px;
+            border-width: 2px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard {
+                padding: 16px;
+                gap: 16px;
+            }
+            
+            .sidebar, .main-content {
+                padding: 24px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .chatbot-popup {
+                width: calc(100vw - 32px);
+                right: 16px;
+                bottom: 16px;
+                height: calc(100vh - 120px);
+            }
+            
+            .chatbot-toggle-btn {
+                bottom: 16px;
+                right: 16px;
+                width: 56px;
+                height: 56px;
+                font-size: 20px;
+            }
+            
+            .dashboard {
+                padding: 12px;
+                gap: 12px;
+            }
+            
+            .sidebar, .main-content {
+                padding: 20px;
+            }
+            
+            .sample-prompts .btn {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+        }
+        
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .dashboard {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        /* Scrollbar Styling */
+        .chatbot-history::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chatbot-history::-webkit-scrollbar-track {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+        
+        .chatbot-history::-webkit-scrollbar-thumb {
+            background: var(--secondary-color);
+            border-radius: 3px;
+        }
+        
+        .chatbot-history::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid dashboard">
+        <div class="row">
+            <div class="col-lg-3 col-md-4">
+                <div class="sidebar">
+                    <div class="sidebar-header">
+                        <h3><i class="fas fa-medical-kit me-2"></i>BeaconMedicalAi AMA</h3>
+                        <div id="user-name" class="welcome-msg">Not logged in</div>
+                        <button class="btn btn-primary w-100" id="login-button" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login
+                        </button>
+                    </div>
+                    
+                    <div class="sidebar-content">
+                        <div id="error-alert" class="alert alert-danger" role="alert" style="display: none;"></div>
+                        
+                        <div class="form-group">
+                            <label for="file-input" class="form-label">
+                                <i class="fas fa-upload me-2"></i>Upload Files
+                            </label>
+                            <input type="file" class="form-control" id="file-input" 
+                                   accept=".zip,.pdf,.mp4,.avi,.mov,.mkv,.wav,.mp3,.jpg,.jpeg,.png" 
+                                   multiple disabled>
+                            <small class="form-text text-muted">ZIP, PDF, Audio, Video, Image files supported</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="text-input-toggle" id="text-input-toggle">
+                                <i class="fas fa-chevron-right"></i>
+                                <span>Paste Text Input</span>
+                                <small class="text-muted ms-auto">Toggle</small>
+                            </div>
+                            <div class="text-input-content" id="text-input-content">
+                                <textarea class="form-control" id="text-input" rows="5" 
+                                          placeholder="Type or paste your input text..." disabled></textarea>
+                                <small class="form-text text-muted">Alternative to file upload for text-based analysis</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button class="btn btn-outline-primary w-100" id="preview-button" disabled>
+                                <i class="fas fa-eye"></i>
+                                Preview Files
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edition-dropdown" class="form-label">
+                                <i class="fas fa-book-medical me-2"></i>AMA Guides Edition
+                            </label>
+                            <select class="form-select" id="edition-dropdown" disabled>
+                                <option value="4th Edition" selected>4th Edition</option>
+                                <option value="6th Edition">6th Edition</option>
+                            </select>
+                            <small id="edition-status" class="form-text text-muted">Using AMA Guides 4th Edition</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="mode-dropdown" class="form-label">
+                                <i class="fas fa-cogs me-2"></i>Analysis Mode
+                            </label>
+                            <select class="form-select" id="mode-dropdown" disabled>
+                                <option value="BeaconMedicalAi Report mode" selected>Report Generation</option>
+                                <option value="BeaconMedicalAi Rebuttal mode">Rebuttal Analysis</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button class="btn btn-primary w-100" id="generate-button" disabled>
+                                <span id="generate-spinner" class="spinner-border spinner-border-sm" style="display: none;"></span>
+                                <i class="fas fa-file-medical"></i>
+                                Generate Report
+                            </button>
+                            <button class="btn btn-secondary w-100" id="debate-button" style="display: none;" disabled>
+                                <span id="debate-spinner" class="spinner-border spinner-border-sm" style="display: none;"></span>
+                                <i class="fas fa-balance-scale"></i>
+                                Generate Rebuttal
+                            </button>
+                            <button class="btn btn-danger w-100" id="stop-button" style="display: none;">
+                                <i class="fas fa-stop"></i>
+                                Stop Generation
+                            </button>
+                        </div>
+                        
+                        <div class="form-group" style="display: none;" id="action-buttons">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-danger" id="clear-button" style="display: none;">
+                                    <i class="fas fa-trash"></i>
+                                    Clear Report
+                                </button>
+                                <button class="btn btn-success" id="download-button" style="display: none;">
+                                    <i class="fas fa-download"></i>
+                                    Download PDF
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="progress-container" style="display: none;">
+                            <div class="progress">
+                                <div id="progress-bar" class="progress-bar" role="progressbar" 
+                                     style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <small id="progress-label" class="form-text text-muted mt-2"></small>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-footer">
+                        <button class="btn btn-danger w-100" id="logout-button" style="display: none;">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-9 col-md-8">
+                <div class="main-content">
+                    <div id="report-column">
+                        <div id="report-preview" class="markdown-body" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Toggle Button -->
+    <button class="chatbot-toggle-btn" id="chatbot-toggle-btn" title="Chat with AMA">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Chatbot Popup -->
+    <div class="chatbot-popup" id="chatbot-popup">
+        <div class="chatbot-header">
+            <h5><i class="fas fa-robot me-2"></i>Chat with AMA</h5>
+            <button class="btn btn-success download-btn" id="chat-download-button" style="display: none;">
+                <i class="fas fa-download me-1"></i>Download
+            </button>
+            <button class="chatbot-close" id="chatbot-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chatbot-body">
+            <div class="chatbot-history" id="chat-history">
+                <div class="sample-prompts" id="sample-prompts">
+                    <span class="sample-prompts-title">Try these prompts:</span>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-outline-primary btn-sm" onclick="addExample('What does this report mean?')">
+                            What does this report mean?
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="addExample('Can you explain this impairment?')">
+                            Explain impairment
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="addExample('What is the rebuttal for this argument?')">
+                            Rebuttal analysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="chatbot-input-group">
+                <input type="text" class="form-control" id="chat-input" 
+                       placeholder="Type your question..." disabled>
+                <button class="btn btn-primary" id="chat-submit" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">
+                        <i class="fas fa-user-shield me-2"></i>Login to BeaconMedicalAi AMA
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="login-username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="login-username" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="login-password" placeholder="Enter password">
+                    </div>
+                    <div id="login-error" class="text-danger mt-2" style="display: none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="login-submit">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade preview-modal" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewModalLabel">
+                        <i class="fas fa-eye me-2"></i>File Preview
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="image-gallery" class="gallery d-flex flex-wrap gap-3"></div>
+                    <div id="pdf-preview" style="display: none;">
+                        <iframe id="pdf-frame" style="width: 100%; height: 500px; border: 2px solid var(--border-color); border-radius: 8px;"></iframe>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let username = null;
+        let generationRunning = false;
+        let generationCancelled = false;
+        let chatHistory = [];
+        let loginModal = null;
+        let accumulatedContent = '';
+        let chatbotVisible = false;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            loginModal = new bootstrap.Modal(document.getElementById('loginModal'), { backdrop: 'static', keyboard: false });
+            await checkLoginStatus();
+            
+            // Event listeners
+            document.getElementById('login-submit').addEventListener('click', handleLogin);
+            document.getElementById('logout-button').addEventListener('click', handleLogout);
+            document.getElementById('file-input').addEventListener('change', updatePreview);
+            document.getElementById('preview-button').addEventListener('click', () => new bootstrap.Modal(document.getElementById('previewModal')).show());
+            document.getElementById('edition-dropdown').addEventListener('change', updateVectorstore);
+            document.getElementById('mode-dropdown').addEventListener('change', toggleMode);
+            document.getElementById('generate-button').addEventListener('click', generateReport);
+            document.getElementById('debate-button').addEventListener('click', generateRebuttal);
+            document.getElementById('stop-button').addEventListener('click', stopGeneration);
+            document.getElementById('clear-button').addEventListener('click', resetReports);
+            document.getElementById('chat-submit').addEventListener('click', handleChatQuery);
+            document.getElementById('chat-input').addEventListener('keyup', (e) => { if (e.key === 'Enter') handleChatQuery(); });
+            document.getElementById('chat-download-button').addEventListener('click', downloadChatHistory);
+            
+            // Text input toggle
+            document.getElementById('text-input-toggle').addEventListener('click', () => {
+                const toggle = document.getElementById('text-input-toggle');
+                const content = document.getElementById('text-input-content');
+                const textInput = document.getElementById('text-input');
+                
+                toggle.classList.toggle('active');
+                content.classList.toggle('show');
+                
+                if (content.classList.contains('show')) {
+                    setTimeout(() => textInput.focus(), 300);
+                }
+            });
+            
+            // Chatbot toggle
+            document.getElementById('chatbot-toggle-btn').addEventListener('click', toggleChatbot);
+            document.getElementById('chatbot-close').addEventListener('click', toggleChatbot);
+            
+            // Enter key support for login
+            ['login-username', 'login-password'].forEach(id => {
+                document.getElementById(id).addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') {
+                        handleLogin();
+                    }
+                });
+            });
+            
+            // Text input change listener
+            document.getElementById('text-input').addEventListener('input', updateButtonStates);
+        });
+
+        function addExample(query) {
+            document.getElementById('chat-input').value = query;
+            handleChatQuery();
+        }
+
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/get_username');
+                const data = await response.json();
+                username = data.username;
+                updateUIForLoginStatus();
+                if (!username) loginModal.show();
+                else loginModal.hide();
+            } catch (e) {
+                showError(`Error checking login status: ${e.message}`);
+            }
+        }
+
+        async function handleLogin() {
+            const usernameInput = document.getElementById('login-username').value;
+            const passwordInput = document.getElementById('login-password').value;
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: usernameInput, password: passwordInput })
+                });
+                const data = await response.json();
+                const errorAlert = document.getElementById('login-error');
+                if (data.status === 'success') {
+                    username = data.username;
+                    loginModal.hide();
+                    updateUIForLoginStatus();
+                    errorAlert.style.display = 'none';
+                } else {
+                    errorAlert.style.display = 'block';
+                    errorAlert.innerText = data.message;
+                }
+            } catch (e) {
+                document.getElementById('login-error').style.display = 'block';
+                document.getElementById('login-error').innerText = `Error logging in: ${e.message}`;
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                username = null;
+                chatHistory = [];
+                updateUIForLoginStatus();
+                loginModal.show();
+                if (chatbotVisible) {
+                    toggleChatbot();
+                }
+            } catch (e) {
+                showError(`Error logging out: ${e.message}`);
+            }
+        }
+
+        function updateUIForLoginStatus() {
+            const dashboard = document.querySelector('.dashboard');
+            const loginButton = document.getElementById('login-button');
+            const logoutButton = document.getElementById('logout-button');
+            const userName = document.getElementById('user-name');
+            const chatToggleBtn = document.getElementById('chatbot-toggle-btn');
+            const inputs = [
+                'file-input', 'text-input', 'preview-button', 'edition-dropdown',
+                'mode-dropdown', 'generate-button', 'debate-button',
+                'chat-input', 'chat-submit'
+            ];
+            const errorAlert = document.getElementById('error-alert');
+            const progressContainer = document.getElementById('progress-container');
+            const actionButtons = document.getElementById('action-buttons');
+            const samplePrompts = document.getElementById('sample-prompts');
+
+            if (username) {
+                dashboard.style.display = 'block';
+                userName.innerHTML = `<i class="fas fa-user-check me-2"></i>Welcome <strong>${username.toUpperCase()}</strong> - Chat with bot for assistance`;
+                loginButton.style.display = 'none';
+                logoutButton.style.display = 'block';
+                chatToggleBtn.style.display = 'flex';
+                inputs.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.disabled = false;
+                });
+                errorAlert.style.display = 'none';
+                progressContainer.style.display = 'none';
+                if (samplePrompts) samplePrompts.style.display = chatHistory.length === 0 ? 'block' : 'none';
+            } else {
+                dashboard.style.display = 'none';
+                userName.innerHTML = '<i class="fas fa-user-times me-2"></i>Not logged in';
+                loginButton.style.display = 'block';
+                logoutButton.style.display = 'none';
+                chatToggleBtn.style.display = 'none';
+                inputs.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.disabled = true;
+                });
+                document.querySelectorAll('.btn-outline-secondary').forEach(btn => btn.disabled = true);
+                document.getElementById('report-preview').style.display = 'none';
+                document.getElementById('chat-download-button').style.display = 'none';
+                actionButtons.style.display = 'none';
+                errorAlert.style.display = 'none';
+                progressContainer.style.display = 'none';
+                const textContent = document.getElementById('text-input-content');
+                const textToggle = document.getElementById('text-input-toggle');
+                textContent.classList.remove('show');
+                textToggle.classList.remove('active');
+                if (samplePrompts) samplePrompts.style.display = 'none';
+            }
+        }
+
+        function toggleChatbot() {
+            const popup = document.getElementById('chatbot-popup');
+            const toggleBtn = document.getElementById('chatbot-toggle-btn');
+            const samplePrompts = document.getElementById('sample-prompts');
+            
+            chatbotVisible = !chatbotVisible;
+            
+            if (chatbotVisible && username) {
+                popup.style.display = 'flex';
+                toggleBtn.classList.add('active');
+                processChatFiles();
+                updateChatDisplay();
+                document.getElementById('chat-download-button').style.display = chatHistory.length ? 'inline-flex' : 'none';
+                if (samplePrompts) samplePrompts.style.display = chatHistory.length === 0 ? 'block' : 'none';
+            } else {
+                popup.style.display = 'none';
+                toggleBtn.classList.remove('active');
+            }
+        }
+
+        async function processChatFiles() {
+            const files = document.getElementById('file-input').files;
+            const formData = new FormData();
+            for (let file of files) formData.append('files', file);
+            formData.append('username', username);
+            
+            try {
+                const response = await fetch('/api/process_chat_files', { method: 'POST', body: formData });
+                const data = await response.json();
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    document.getElementById('error-alert').style.display = 'none';
+                }
+            } catch (e) {
+                showError(`Error processing chat files: ${e.message}`);
+            }
+        }
+
+        async function updatePreview() {
+            const files = document.getElementById('file-input').files;
+            const gallery = document.getElementById('image-gallery');
+            const pdfPreview = document.getElementById('pdf-preview');
+            const pdfFrame = document.getElementById('pdf-frame');
+            gallery.innerHTML = '';
+            pdfPreview.style.display = 'none';
+
+            for (let file of files) {
+                if (file.type.startsWith('image/')) {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'position-relative';
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.className = 'img-thumbnail';
+                    img.style.cssText = 'width: 120px; height: 120px; object-fit: cover; border-radius: 8px;';
+                    imgContainer.appendChild(img);
+                    gallery.appendChild(imgContainer);
+                } else if (file.type === 'application/pdf') {
+                    pdfFrame.src = URL.createObjectURL(file);
+                    pdfPreview.style.display = 'block';
+                }
+            }
+            updateButtonStates();
+        }
+
+        async function updateVectorstore() {
+            const edition = document.getElementById('edition-dropdown').value;
+            try {
+                const response = await fetch('/api/update_vectorstore', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ edition })
+                });
+                const data = await response.json();
+                const errorAlert = document.getElementById('error-alert');
+                if (data.status.startsWith('Error')) {
+                    errorAlert.style.display = 'block';
+                    errorAlert.innerText = data.status;
+                } else {
+                    document.getElementById('edition-status').innerText = data.status;
+                    errorAlert.style.display = 'none';
+                }
+            } catch (e) {
+                showError(`Error updating vectorstore: ${e.message}`);
+            }
+        }
+
+        function toggleMode() {
+            const mode = document.getElementById('mode-dropdown').value;
+            const generateButton = document.getElementById('generate-button');
+            const debateButton = document.getElementById('debate-button');
+            
+            if (mode === 'BeaconMedicalAi Report mode') {
+                generateButton.style.display = 'block';
+                debateButton.style.display = 'none';
+                alert('Beacon Medical Ai AMA Guides to Evaluation of PERMANENT Impairment Report');
+            } else {
+                generateButton.style.display = 'none';
+                debateButton.style.display = 'block';
+                alert('Beacon Medical Ai AMA Guides to Evaluation of PERMANENT Impairment Rebuttal');
+            }
+            updateButtonStates();
+        }
+
+        function updateButtonStates() {
+            const files = document.getElementById('file-input').files;
+            const textInput = document.getElementById('text-input').value;
+            const hasValidInput = files.length > 0 || textInput.trim().length > 0;
+            
+            document.getElementById('generate-button').disabled = !username || !hasValidInput || generationRunning;
+            document.getElementById('debate-button').disabled = !username || !hasValidInput || generationRunning;
+            document.getElementById('preview-button').disabled = !username || files.length === 0;
+        }
+
+        async function generateReport() {
+            if (!username) {
+                alert('Please log in first.');
+                return;
+            }
+            const files = document.getElementById('file-input').files;
+            const textInput = document.getElementById('text-input').value;
+            if (files.length === 0 && !textInput.trim()) {
+                showError('Please upload a file or enter text.');
+                return;
+            }
+            
+            generationRunning = true;
+            generationCancelled = false;
+            accumulatedContent = '';
+            toggleButtons(true);
+            
+            const formData = new FormData();
+            for (let file of files) formData.append('files', file);
+            formData.append('text', textInput);
+            formData.append('username', username);
+            formData.append('edition', document.getElementById('edition-dropdown').value);
+            
+            const errorAlert = document.getElementById('error-alert');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const progressLabel = document.getElementById('progress-label');
+            const reportPreview = document.getElementById('report-preview');
+            const actionButtons = document.getElementById('action-buttons');
+            let buffer = '';
+
+            try {
+                progressContainer.style.display = 'block';
+                progressLabel.innerText = 'Processing...';
+                progressBar.style.width = '0%';
+                document.getElementById('generate-spinner').style.display = 'inline-block';
+                
+                const response = await fetch('/api/generate_report', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const data = await response.json();
+                    showError(data.error || 'Failed to generate report');
+                    toggleButtons(false);
+                    return;
+                }
+                
+                const reader = response.body.getReader();
+                reportPreview.style.display = 'block';
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done || generationCancelled) {
+                        if (generationCancelled) showError('Report generation cancelled.');
+                        break;
+                    }
+                    
+                    const chunk = new TextDecoder().decode(value);
+                    buffer += chunk;
+                    const events = buffer.split('\n\n');
+                    
+                    for (let i = 0; i < events.length - 1; i++) {
+                        const event = events[i].trim();
+                        if (event.startsWith('data: ')) {
+                            const dataStr = event.substring(6).trim();
+                            try {
+                                const parsedData = JSON.parse(dataStr);
+                                if (parsedData.report) {
+                                    accumulatedContent = parsedData.report;
+                                    reportPreview.innerHTML = accumulatedContent;
+                                    let currentProgress = parseFloat(progressBar.style.width) || 0;
+                                    progressBar.style.width = `${Math.min(currentProgress + 10, 90)}%`;
+                                    progressLabel.innerText = 'Generating report...';
+                                }
+                                if (parsedData.pdf) {
+                                    progressBar.style.width = '100%';
+                                    progressLabel.innerText = 'Completed';
+                                    actionButtons.style.display = 'block';
+                                    document.getElementById('download-button').style.display = 'block';
+                                    document.getElementById('download-button').onclick = () => {
+                                        const link = document.createElement('a');
+                                        link.href = `data:application/pdf;base64,${parsedData.pdf}`;
+                                        link.download = 'report.pdf';
+                                        link.click();
+                                    };
+                                }
+                                if (parsedData.error || parsedData.report.startsWith('Error') || parsedData.report === 'Generation cancelled.') {
+                                    showError(parsedData.error || parsedData.report);
+                                    break;
+                                }
+                                errorAlert.style.display = 'none';
+                            } catch (e) {
+                                console.warn('JSON parse failed:', e, dataStr);
+                            }
+                        }
+                    }
+                    buffer = events[events.length - 1];
+                }
+            } catch (e) {
+                showError(`Error generating report: ${e.message}`);
+            }
+            
+            toggleButtons(false);
+            progressContainer.style.display = 'none';
+            document.getElementById('generate-spinner').style.display = 'none';
+        }
+
+        async function generateRebuttal() {
+            if (!username) {
+                alert('Please log in first.');
+                return;
+            }
+            const files = document.getElementById('file-input').files;
+            const textInput = document.getElementById('text-input').value;
+            if (files.length === 0 && !textInput.trim()) {
+                showError('Please upload a file or enter text.');
+                return;
+            }
+            
+            generationRunning = true;
+            generationCancelled = false;
+            accumulatedContent = '';
+            toggleButtons(true);
+            
+            const formData = new FormData();
+            for (let file of files) formData.append('files', file);
+            formData.append('text', textInput);
+            formData.append('username', username);
+            formData.append('edition', document.getElementById('edition-dropdown').value);
+            
+            const errorAlert = document.getElementById('error-alert');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const progressLabel = document.getElementById('progress-label');
+            const reportPreview = document.getElementById('report-preview');
+            const actionButtons = document.getElementById('action-buttons');
+            let buffer = '';
+
+            try {
+                progressContainer.style.display = 'block';
+                progressLabel.innerText = 'Processing...';
+                progressBar.style.width = '0%';
+                document.getElementById('debate-spinner').style.display = 'inline-block';
+                
+                const response = await fetch('/api/generate_rebuttal', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const data = await response.json();
+                    showError(data.error || 'Failed to generate rebuttal');
+                    toggleButtons(false);
+                    return;
+                }
+                
+                const reader = response.body.getReader();
+                reportPreview.style.display = 'block';
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done || generationCancelled) {
+                        if (generationCancelled) showError('Rebuttal generation cancelled.');
+                        break;
+                    }
+                    
+                    const chunk = new TextDecoder().decode(value);
+                    buffer += chunk;
+                    const events = buffer.split('\n\n');
+                    
+                    for (let i = 0; i < events.length - 1; i++) {
+                        const event = events[i].trim();
+                        if (event.startsWith('data: ')) {
+                            const dataStr = event.substring(6).trim();
+                            try {
+                                const parsedData = JSON.parse(dataStr);
+                                if (parsedData.rebuttal) {
+                                    accumulatedContent = parsedData.rebuttal;
+                                    reportPreview.innerHTML = accumulatedContent;
+                                    let currentProgress = parseFloat(progressBar.style.width) || 0;
+                                    progressBar.style.width = `${Math.min(currentProgress + 10, 90)}%`;
+                                    progressLabel.innerText = 'Generating rebuttal...';
+                                }
+                                if (parsedData.pdf) {
+                                    progressBar.style.width = '100%';
+                                    progressLabel.innerText = 'Completed';
+                                    actionButtons.style.display = 'block';
+                                    document.getElementById('download-button').style.display = 'block';
+                                    document.getElementById('download-button').onclick = () => {
+                                        const link = document.createElement('a');
+                                        link.href = `data:application/pdf;base64,${parsedData.pdf}`;
+                                        link.download = 'rebuttal.pdf';
+                                        link.click();
+                                    };
+                                }
+                                if (parsedData.error || parsedData.rebuttal.startsWith('Error') || parsedData.rebuttal === 'Generation cancelled.') {
+                                    showError(parsedData.error || parsedData.rebuttal);
+                                    break;
+                                }
+                                errorAlert.style.display = 'none';
+                            } catch (e) {
+                                console.warn('JSON parse failed:', e, dataStr);
+                            }
+                        }
+                    }
+                    buffer = events[events.length - 1];
+                }
+            } catch (e) {
+                showError(`Error generating rebuttal: ${e.message}`);
+            }
+            
+            toggleButtons(false);
+            progressContainer.style.display = 'none';
+            document.getElementById('debate-spinner').style.display = 'none';
+        }
+
+        function stopGeneration() {
+            if (generationRunning) {
+                generationCancelled = true;
+                document.getElementById('progress-label').innerText = 'Cancellation requested...';
+            }
+        }
+
+        async function resetReports() {
+            if (!username) return;
+            try {
+                const response = await fetch('/api/reset_reports', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                const data = await response.json();
+                const errorAlert = document.getElementById('error-alert');
+                const actionButtons = document.getElementById('action-buttons');
+                if (data.error) {
+                    errorAlert.style.display = 'block';
+                    errorAlert.innerText = data.error;
+                } else {
+                    document.getElementById('report-preview').style.display = 'none';
+                    actionButtons.style.display = 'none';
+                    document.getElementById('progress-container').style.display = 'none';
+                    errorAlert.style.display = 'none';
+                    accumulatedContent = '';
+                }
+            } catch (e) {
+                showError(`Error resetting reports: ${e.message}`);
+            }
+        }
+
+        async function handleChatQuery() {
+            if (!username) {
+                alert('Please log in first.');
+                return;
+            }
+            const query = document.getElementById('chat-input').value.trim();
+            if (!query) {
+                showError('Please enter a message.');
+                return;
+            }
+
+            try {
+                chatHistory.push([query, '', Date.now()]);
+                updateChatDisplay();
+                document.getElementById('chat-input').value = '';
+                document.getElementById('chat-submit').disabled = true;
+                const samplePrompts = document.getElementById('sample-prompts');
+                if (samplePrompts) samplePrompts.style.display = 'none';
+
+                const response = await fetch('/api/handle_query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, history: chatHistory, username })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    showError(data.error || 'Failed to process chat query');
+                    chatHistory[chatHistory.length - 1][1] = 'Error: Failed to process query';
+                    updateChatDisplay();
+                    document.getElementById('chat-submit').disabled = false;
+                    return;
+                }
+
+                const reader = response.body.getReader();
+                let buffer = '';
+                let finalResponse = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        if (buffer.trim()) {
+                            const events = buffer.split('\n\n');
+                            for (const event of events) {
+                                if (event.startsWith('data: ')) {
+                                    const dataStr = event.substring(6).trim();
+                                    try {
+                                        const parsedData = JSON.parse(dataStr);
+                                        if (parsedData.response) {
+                                            finalResponse = parsedData.response;
+                                            chatHistory[chatHistory.length - 1][1] = finalResponse;
+                                            updateChatDisplay();
+                                        }
+                                        if (parsedData.response && (parsedData.response.startsWith('Error') || parsedData.response === 'Please log in first.' || parsedData.response === 'Please enter a message.')) {
+                                            showError(parsedData.response);
+                                            break;
+                                        }
+                                        document.getElementById('error-alert').style.display = 'none';
+                                    } catch (e) {
+                                        console.warn('JSON parse failed:', e, dataStr);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    }
+
+                    const chunk = new TextDecoder().decode(value);
+                    buffer += chunk;
+                    const events = buffer.split('\n\n');
+
+                    for (let i = 0; i <events.length - 1; i++) {
+                        const event = events[i].trim();
+                        if (event.startsWith('data: ')) {
+                            const dataStr = event.substring(6).trim();
+                            try {
+                                const parsedData = JSON.parse(dataStr);
+                                if (parsedData.response) {
+                                    finalResponse = parsedData.response;
+                                    chatHistory[chatHistory.length - 1][1] = finalResponse;
+                                    updateChatDisplay();
+                                }
+                                if (parsedData.response && (parsedData.response.startsWith('Error') || parsedData.response === 'Please log in first.' || parsedData.response === 'Please enter a message.')) {
+                                    showError(parsedData.response);
+                                    break;
+                                }
+                                document.getElementById('error-alert').style.display = 'none';
+                            } catch (e) {
+                                console.warn('JSON parse failed:', e, dataStr);
+                            }
+                        }
+                    }
+                    buffer = events[events.length - 1];
+                }
+
+                if (finalResponse) {
+                    chatHistory[chatHistory.length - 1][1] = finalResponse;
+                    updateChatDisplay();
+                    document.getElementById('chat-download-button').style.display = 'inline-flex';
+                }
+                document.getElementById('chat-submit').disabled = false;
+
+            } catch (e) {
+                showError(`Error handling chat query: ${e.message}`);
+                chatHistory[chatHistory.length - 1][1] = `Error: ${e.message}`;
+                updateChatDisplay();
+                document.getElementById('chat-submit').disabled = false;
+            }
+        }
+
+        async function downloadChatHistory() {
+            try {
+                const response = await fetch('/api/download_chat_history', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ history: chatHistory, username })
+                });
+                
+                if (!response.ok) {
+                    const data = await response.json();
+                    showError(data.error || 'Failed to download chat history');
+                    return;
+                }
+                
+                const blob = await response.blob();
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'chat_history.txt';
+                link.click();
+                document.getElementById('error-alert').style.display = 'none';
+            } catch (e) {
+                showError(`Error downloading chat history: ${e.message}`);
+            }
+        }
+
+        function updateChatDisplay() {
+            const chatHistoryDiv = document.getElementById('chat-history');
+            const samplePrompts = document.getElementById('sample-prompts');
+            
+            // Hide sample prompts if there's chat history
+            if (samplePrompts && chatHistory.length > 0) {
+                samplePrompts.style.display = 'none';
+            }
+            
+            // Clear existing messages
+            chatHistoryDiv.innerHTML = '';
+            
+            // Add sample prompts if no history
+            if (chatHistory.length === 0 && samplePrompts) {
+                chatHistoryDiv.appendChild(samplePrompts);
+                samplePrompts.style.display = 'block';
+            } else {
+                // Add chat messages
+                chatHistory.forEach(([query, response, timestamp]) => {
+                    const message = document.createElement('div');
+                    message.className = 'chat-message';
+                    message.innerHTML = `
+                        <div class="d-flex align-items-start gap-2 mb-2">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; min-width: 32px;">
+                                <i class="fas fa-user" style="font-size: 12px;"></i>
+                            </div>
+                            <div>
+                                <strong>You</strong>
+                                <small class="text-muted ms-2">${new Date(timestamp).toLocaleTimeString()}</small>
+                                <div class="mt-1">${query}</div>
+                            </div>
+                        </div>
+                        ${response ? `
+                        <div class="d-flex align-items-start gap-2 mt-3">
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; min-width: 32px;">
+                                <i class="fas fa-robot" style="font-size: 12px;"></i>
+                            </div>
+                            <div>
+                                <strong>AMA Assistant</strong>
+                                <div class="mt-1">${response}</div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    `;
+                    chatHistoryDiv.appendChild(message);
+                });
+            }
+            
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        }
+
+        function showError(message) {
+            const errorAlert = document.getElementById('error-alert');
+            errorAlert.style.display = 'block';
+            errorAlert.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>${message}`;
+        }
+
+        function toggleButtons(generating) {
+            const mode = document.getElementById('mode-dropdown').value;
+            const actionButtons = document.getElementById('action-buttons');
+            
+            document.getElementById('generate-button').style.display = generating ? 'none' : (mode === 'BeaconMedicalAi Report mode' ? 'block' : 'none');
+            document.getElementById('debate-button').style.display = generating ? 'none' : (mode === 'BeaconMedicalAi Rebuttal mode' ? 'block' : 'none');
+            document.getElementById('stop-button').style.display = generating ? 'block' : 'none';
+            
+            if (generating) {
+                actionButtons.style.display = 'none';
+            } else if (accumulatedContent) {
+                actionButtons.style.display = 'block';
+                document.getElementById('clear-button').style.display = 'block';
+            }
+            
+            document.getElementById('generate-spinner').style.display = 'none';
+            document.getElementById('debate-spinner').style.display = 'none';
+            updateButtonStates();
+        }
+    </script>
+</body>
+</html>

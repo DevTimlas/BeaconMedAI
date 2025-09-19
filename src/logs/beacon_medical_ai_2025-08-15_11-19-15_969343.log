@@ -1,0 +1,12 @@
+2025-08-15 11:19:17.894 | INFO     | __main__:main:13 - Starting BeaconMedicalAi AMA application
+2025-08-15 11:19:17.894 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:173 - Initializing vectorstore for 4th Edition
+2025-08-15 11:19:17.894 | WARNING  | BeaconMedAI.core.vectorstore:initialize_vectorstore:103 - PDF file not found: /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/guides-to-the-evaluation-of-permanent-impairment_4th.pdf. Cannot create vectorstore.
+2025-08-15 11:19:17.894 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore:167 - Failed to initialize vectorstore for 4th Edition: PDF file not found: /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/guides-to-the-evaluation-of-permanent-impairment_4th.pdf
+2025-08-15 11:19:17.894 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:181 - Failed to initialize vectorstore for 4th Edition
+2025-08-15 11:19:17.895 | ERROR    | __main__:main:19 - Failed to initialize vectorstore on startup: Could not initialize vectorstore for 4th Edition
+2025-08-15 11:19:17.895 | INFO     | __main__:main:20 - Proceeding with application launch, vectorstore can be initialized later via UI
+2025-08-15 11:19:18.083 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:173 - Initializing vectorstore for 4th Edition
+2025-08-15 11:19:18.084 | WARNING  | BeaconMedAI.core.vectorstore:initialize_vectorstore:103 - PDF file not found: /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/guides-to-the-evaluation-of-permanent-impairment_4th.pdf. Cannot create vectorstore.
+2025-08-15 11:19:18.084 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore:167 - Failed to initialize vectorstore for 4th Edition: PDF file not found: /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/guides-to-the-evaluation-of-permanent-impairment_4th.pdf
+2025-08-15 11:19:18.084 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:181 - Failed to initialize vectorstore for 4th Edition
+2025-08-15 11:19:18.084 | ERROR    | __main__:main:35 - Error launching application: Could not initialize vectorstore for 4th Edition

@@ -1,0 +1,39 @@
+2025-08-15 12:25:43.987 | INFO     | __main__:main:13 - Starting BeaconMedicalAi AMA application
+2025-08-15 12:25:43.987 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-08-15 12:25:43.987 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-08-15 12:25:44.207 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-08-15 12:25:44.207 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-08-15 12:25:57.820 | INFO     | BeaconMedAI.auth.authentication:validate_login:33 - Successful login for user: Tim
+2025-08-15 12:26:02.000 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 6th Edition
+2025-08-15 12:26:02.006 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_6th
+2025-08-15 12:26:10.337 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 6th Edition
+2025-08-15 12:26:10.338 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_6th
+2025-08-15 12:26:10.460 | INFO     | BeaconMedAI.core.user_data:__init__:36 - 
+==================================================
+NEW USER SESSION CREATED
+Username: Tim
+User ID: a989a102-18ca-4f67-8e4a-9ed8b5aefbaa
+==================================================
+
+2025-08-15 12:26:10.460 | INFO     | BeaconMedAI.core.user_data:get_user_data:97 - Created new user data for: Tim
+2025-08-15 12:26:10.478 | INFO     | BeaconMedAI.processors.file_processors:process_file:33 - User Tim started processing 1 files
+2025-08-15 12:26:10.479 | INFO     | BeaconMedAI.core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-08-15 12:26:10.479 | INFO     | BeaconMedAI.processors.file_processors:process_single_file:52 - Processing file /private/var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/gradio/9853adc70cf79735bb12a4e45f8145aa628d78f2f60ea8af7b816db04666c13f/AMA Sample Medical Report 1.pdf (1/1)
+2025-08-15 12:26:10.480 | INFO     | BeaconMedAI.processors.file_processors:get_report_from_pdf:107 - Loading PDF /private/var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/gradio/9853adc70cf79735bb12a4e45f8145aa628d78f2f60ea8af7b816db04666c13f/AMA Sample Medical Report 1.pdf for user Tim
+2025-08-15 12:26:10.536 | INFO     | BeaconMedAI.core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-08-15 12:26:10.536 | INFO     | BeaconMedAI.generators.report_generator:get_ama_impairment_report:55 - Generating impairment report for user Tim
+2025-08-15 12:26:10.536 | INFO     | BeaconMedAI.core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-08-15 12:26:14.387 | INFO     | BeaconMedAI.utils.helpers:get_metadata_filter:267 - Starting metadata filter generation
+2025-08-15 12:26:16.718 | DEBUG    | BeaconMedAI.utils.helpers:get_metadata_filter:289 - Extracted 20 terms: ['traumatic brain injury', 'symptoms', 'headaches', 'dizziness', 'cognitive difficulties', 'mri scan', 'neurological assessment', 'fractured right clavicle', 'persistent pain', 'limited range of motion', 'surgery', 'lumbar disc herniation', 'disc protrusion', 'pain', 'lower extremities', 'physical therapy', 'pain management', 'psychological trauma', 'post-accident anxiety', 'depression']
+2025-08-15 12:26:16.727 | ERROR    | BeaconMedAI.utils.helpers:get_metadata_filter:319 - Vector store query failed: 'NoneType' object has no attribute 'similarity_search'
+2025-08-15 12:26:16.727 | INFO     | BeaconMedAI.utils.helpers:get_metadata_filter:327 - No chapters found. Using term-based filter.
+2025-08-15 12:26:16.727 | INFO     | BeaconMedAI.utils.helpers:get_metadata_filter:329 - Term-based filter: {'terms': ['traumatic brain injury', 'symptoms', 'headaches', 'dizziness', 'cognitive difficulties', 'mri scan', 'neurological assessment', 'fractured right clavicle', 'persistent pain', 'limited range of motion', 'surgery', 'lumbar disc herniation', 'disc protrusion', 'pain', 'lower extremities', 'physical therapy', 'pain management', 'psychological trauma', 'post-accident anxiety', 'depression']}
+2025-08-15 12:26:16.727 | INFO     | BeaconMedAI.generators.report_generator:get_ama_impairment_report:98 - Using term-based query: traumatic brain injury symptoms headaches dizziness cognitive difficulties mri scan neurological assessment fractured right clavicle persistent pain limited range of motion surgery lumbar disc herniation disc protrusion pain lower extremities physical therapy pain management psychological trauma post-accident anxiety depression
+2025-08-15 12:26:16.727 | INFO     | BeaconMedAI.generators.report_generator:get_ama_impairment_report:102 - Retrieving AMA content with k=3, fetch_k=15, lambda_mult=0.5 based on 112 unique words
+2025-08-15 12:26:18.965 | INFO     | BeaconMedAI.generators.report_generator:get_ama_impairment_report:107 - Initially retrieved 5 documents
+2025-08-15 12:26:20.936 | INFO     | BeaconMedAI.generators.report_generator:get_ama_impairment_report:111 - Reranked to 3 documents
+2025-08-15 12:26:28.909 | INFO     | BeaconMedAI.generators.report_generator:get_ama_impairment_report:149 - Generated impairment report for user Tim
+2025-08-15 12:26:28.958 | INFO     | BeaconMedAI.generators.combiner:get_combine_reports:30 - Combining reports for user Tim
+2025-08-15 12:26:28.958 | INFO     | BeaconMedAI.core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-08-15 12:26:28.972 | INFO     | BeaconMedAI.generators.combiner:get_combine_reports:45 - Similarity with previous input 1: 0.3509
+2025-08-15 12:27:10.603 | INFO     | BeaconMedAI.generators.combiner:get_combine_reports:89 - Generated combined report for user Tim

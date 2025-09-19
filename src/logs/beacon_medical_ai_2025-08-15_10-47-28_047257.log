@@ -1,0 +1,5 @@
+2025-08-15 10:47:31.039 | INFO     | __main__:main:13 - Starting BeaconMedicalAi AMA application
+2025-08-15 10:55:38.082 | INFO     | BeaconMedAI.auth.authentication:validate_login:33 - Successful login for user: Tim
+2025-08-15 10:55:38.106 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:170 - Initializing vectorstore for 6th Edition
+2025-08-15 10:55:38.119 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore:164 - Failed to initialize vectorstore for 6th Edition: PDF file not found: /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/guides-to-the-evaluation-of-permanent-impairment_6th.pdf
+2025-08-15 10:55:38.119 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:178 - Failed to initialize vectorstore for 6th Edition

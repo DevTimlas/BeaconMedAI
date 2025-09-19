@@ -1,0 +1,181 @@
+/* style.css */
+footer {
+    display: none !important;
+}
+
+.top-right-buttons {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+    z-index: 1000;
+}
+
+.custom-btn {
+    background-color: #ff4d4d !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    border-radius: 3px !important;
+    cursor: pointer !important;
+    max-width: 160px !important;
+    margin: 5px !important;
+    position: relative;
+    z-index: 1001;
+    transition: background-color 0.2s ease;
+}
+
+.custom-btn.download-btn {
+    background-color: #4CAF50 !important;
+}
+.custom-btn.download-btn:hover {
+    background-color: #45a049 !important;
+}
+
+.custom-btn.clear-btn {
+    background-color: #ff4d4d !important;
+}
+.custom-btn.clear-btn:hover {
+    background-color: #e60000 !important;
+}
+
+.custom-btn.BeaconMedicalAi-btn {
+    background-color: #4CAF50 !important;
+}
+.custom-btn.BeaconMedicalAi-btn:hover {
+    background-color: #45a049 !important;
+}
+
+.custom-btn.BeaconMedicalAi-btn-clicked {
+    background-color: #2e7d32 !important;
+}
+.custom-btn.BeaconMedicalAi-btn-clicked:hover {
+    background-color: #27632a !important;
+}
+
+.custom-btn.rebuttal-btn {
+    background-color: #2196F3 !important;
+}
+.custom-btn.rebuttal-btn:hover {
+    background-color: #1e87db !important;
+}
+
+.custom-btn.stop-btn {
+    background-color: #ff4444 !important;
+}
+.custom-btn.stop-btn:hover {
+    background-color: #cc0000 !important;
+}
+
+.custom-btn.preview-btn {
+    background-color: #07ffc9 !important;
+}
+.custom-btn.preview-btn:hover {
+    background-color: #00e0d1 !important;
+}
+
+.top-bar {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app {
+    max-width: 100% !important;
+}
+.gr-app, .gr-block, .gr-box {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.center-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.welcome-msg {
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+    font-size: 1.2em;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 220px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -110px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.file-upload-tooltip {
+    margin-bottom: 5px;
+}
+
+.mode-selector-tooltip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Progress bar styling */
+.gr-progress {
+    background-color: #e0f7fa !important;
+    border-radius: 5px !important;
+    padding: 5px !important;
+}
+.gr-progress > div {
+    background-color: #4CAF50 !important;
+    transition: width 0.3s ease !important;
+}
+
+/* Modal styling */
+.gradio-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 55vw;
+    max-height: 85vh;
+    overflow: auto;
+    background: rgb(16, 23, 2);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    z-index: 1000;
+}
+
+.gradio-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 75%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}

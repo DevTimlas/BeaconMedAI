@@ -1,0 +1,39 @@
+2025-09-12 13:28:08.247 | INFO     | __main__:main:13 - Starting BeaconMedicalAi AMA application
+2025-09-12 13:28:08.247 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-12 13:28:08.247 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-12 13:28:08.639 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-12 13:28:08.639 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-12 13:28:33.379 | INFO     | auth.authentication:validate_login:30 - Successful login for user: Tim
+2025-09-12 13:28:38.675 | INFO     | ui.gradio_interface:update_preview:411 - Previewing 0 images and 1 PDF
+2025-09-12 13:28:40.863 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 6th Edition
+2025-09-12 13:28:40.872 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_6th
+2025-09-12 13:28:42.253 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 6th Edition
+2025-09-12 13:28:42.253 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_6th
+2025-09-12 13:28:42.547 | INFO     | core.user_data:__init__:36 - 
+==================================================
+NEW USER SESSION CREATED
+Username: Tim
+User ID: ee95c20f-6e03-4a55-9f0c-5b5813da3576
+==================================================
+
+2025-09-12 13:28:42.547 | INFO     | core.user_data:get_user_data:97 - Created new user data for: Tim
+2025-09-12 13:28:42.568 | INFO     | processors.file_processors:process_file:33 - User Tim started processing 1 files
+2025-09-12 13:28:42.569 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-12 13:28:42.570 | INFO     | processors.file_processors:process_single_file:52 - Processing file /private/var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/gradio/9853adc70cf79735bb12a4e45f8145aa628d78f2f60ea8af7b816db04666c13f/AMA Sample Medical Report 1.pdf (1/1)
+2025-09-12 13:28:42.570 | INFO     | processors.file_processors:get_report_from_pdf:107 - Loading PDF /private/var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/gradio/9853adc70cf79735bb12a4e45f8145aa628d78f2f60ea8af7b816db04666c13f/AMA Sample Medical Report 1.pdf for user Tim
+2025-09-12 13:28:42.776 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-12 13:28:42.778 | INFO     | generators.report_generator:get_ama_impairment_report:55 - Generating impairment report for user Tim
+2025-09-12 13:28:42.778 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-12 13:28:46.033 | INFO     | utils.helpers:get_metadata_filter:267 - Starting metadata filter generation
+2025-09-12 13:28:47.888 | DEBUG    | utils.helpers:get_metadata_filter:288 - Extracted 15 terms: ['traumatic brain injury', 'mri', 'neurological assessment', 'fractured right clavicle', 'misalignment', 'x-ray imaging', 'lumbar disc herniation', 'disc protrusion', 'pain', 'psychological trauma', 'post-accident anxiety', 'depression', 'panic attacks', 'physical therapy', 'pain management']
+2025-09-12 13:28:47.889 | WARNING  | utils.helpers:get_metadata_filter:334 - No chapters found; using term-based filter only.
+2025-09-12 13:28:47.889 | INFO     | utils.helpers:get_metadata_filter:335 - Term-based filter: {'terms': ['injury', 'pain management', 'brain', 'disc', 'neurological', 'disc protrusion', 'fractured', 'post-accident anxiety', 'imaging', 'fractured right clavicle', 'x-ray', 'depression', 'misalignment', 'clavicle', 'protrusion', 'right', 'lumbar disc herniation', 'traumatic', 'assessment', 'pain']}
+2025-09-12 13:28:47.889 | INFO     | generators.report_generator:get_ama_impairment_report:98 - Using term-based query: injury pain management brain disc neurological disc protrusion fractured post-accident anxiety imaging fractured right clavicle x-ray depression misalignment clavicle protrusion right lumbar disc herniation traumatic assessment pain
+2025-09-12 13:28:47.889 | INFO     | generators.report_generator:get_ama_impairment_report:102 - Retrieving AMA content with k=3, fetch_k=15, lambda_mult=0.5 based on 112 unique words
+2025-09-12 13:28:49.726 | INFO     | generators.report_generator:get_ama_impairment_report:107 - Initially retrieved 6 documents
+2025-09-12 13:28:51.518 | INFO     | generators.report_generator:get_ama_impairment_report:111 - Reranked to 3 documents
+2025-09-12 13:29:00.422 | INFO     | generators.report_generator:get_ama_impairment_report:149 - Generated impairment report for user Tim
+2025-09-12 13:29:00.470 | INFO     | generators.combiner:get_combine_reports:30 - Combining reports for user Tim
+2025-09-12 13:29:00.470 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-12 13:29:00.502 | INFO     | generators.combiner:get_combine_reports:45 - Similarity with previous input 1: 0.4262
+2025-09-12 13:30:10.023 | INFO     | generators.combiner:get_combine_reports:89 - Generated combined report for user Tim

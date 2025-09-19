@@ -1,0 +1,16 @@
+2025-09-19 17:41:49.482 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 17:41:49.483 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 17:42:24.060 | INFO     | auth.authentication:validate_login:30 - Successful login for user: Tim
+2025-09-19 17:42:24.060 | INFO     | __main__:login:178 - User Tim logged in
+2025-09-19 17:42:39.336 | INFO     | core.user_data:__init__:36 - 
+==================================================
+NEW USER SESSION CREATED
+Username: Tim
+User ID: 24e97b24-cde5-442c-84be-a26fee4c4a8e
+==================================================
+
+2025-09-19 17:42:39.336 | INFO     | core.user_data:get_user_data:97 - Created new user data for: Tim
+2025-09-19 17:42:47.281 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-19 17:46:50.279 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-19 17:47:12.588 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-19 17:47:22.728 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim

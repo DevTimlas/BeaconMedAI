@@ -1,0 +1,31 @@
+2025-09-12 13:25:54.862 | INFO     | __main__:main:13 - Starting BeaconMedicalAi AMA application
+2025-09-12 13:25:54.863 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-12 13:25:54.863 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-12 13:25:55.185 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-12 13:25:55.186 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-12 13:26:14.794 | INFO     | auth.authentication:validate_login:30 - Successful login for user: Tim
+2025-09-12 13:26:20.263 | INFO     | ui.gradio_interface:update_preview:411 - Previewing 0 images and 1 PDF
+2025-09-12 13:26:23.352 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 6th Edition
+2025-09-12 13:26:23.355 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_6th
+2025-09-12 13:26:24.698 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 6th Edition
+2025-09-12 13:26:24.698 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_6th
+2025-09-12 13:26:24.801 | INFO     | core.user_data:__init__:36 - 
+==================================================
+NEW USER SESSION CREATED
+Username: Tim
+User ID: 45afae6e-0f9e-42aa-b873-362c97461562
+==================================================
+
+2025-09-12 13:26:24.801 | INFO     | core.user_data:get_user_data:97 - Created new user data for: Tim
+2025-09-12 13:26:24.816 | INFO     | processors.file_processors:process_file:33 - User Tim started processing 1 files
+2025-09-12 13:26:24.817 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-12 13:26:24.817 | INFO     | processors.file_processors:process_single_file:52 - Processing file /private/var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/gradio/9853adc70cf79735bb12a4e45f8145aa628d78f2f60ea8af7b816db04666c13f/AMA Sample Medical Report 1.pdf (1/1)
+2025-09-12 13:26:24.817 | INFO     | processors.file_processors:get_report_from_pdf:107 - Loading PDF /private/var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/gradio/9853adc70cf79735bb12a4e45f8145aa628d78f2f60ea8af7b816db04666c13f/AMA Sample Medical Report 1.pdf for user Tim
+2025-09-12 13:26:24.848 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-12 13:26:24.848 | INFO     | generators.report_generator:get_ama_impairment_report:55 - Generating impairment report for user Tim
+2025-09-12 13:26:24.848 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-12 13:26:29.098 | INFO     | utils.helpers:get_metadata_filter:267 - Starting metadata filter generation
+2025-09-12 13:26:31.403 | DEBUG    | utils.helpers:get_metadata_filter:288 - Extracted 20 terms: ['traumatic brain injury', 'symptoms', 'headaches', 'dizziness', 'cognitive difficulties', 'mri scan', 'neurological assessment', 'fractured right clavicle', 'misalignment', 'x-ray imaging', 'pain', 'limited range of motion', 'surgery', 'lumbar disc herniation', 'disc protrusion', 'radiating pain', 'lower extremities', 'physical therapy', 'pain management', 'psychological trauma']
+2025-09-12 13:26:31.403 | WARNING  | utils.helpers:get_metadata_filter:308 - Vectorstore is None; skipping chapter matching, using term-based filter.
+2025-09-12 13:26:31.403 | INFO     | utils.helpers:get_metadata_filter:310 - Term-based filter: {'terms': ['traumatic', 'brain', 'injury', None, 'mild', 'moderate', 'symptoms', 'headaches', 'dizziness', 'cognitive', 'difficulties', 'mri', 'scan', 'neurological', 'assessment', None, 'fractured', 'right', 'clavicle', None]}
+2025-09-12 13:26:31.405 | ERROR    | ui.gradio_interface:generate_and_display_report:216 - Error in report generation: sequence item 3: expected str instance, NoneType found

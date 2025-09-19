@@ -1,0 +1,11 @@
+2025-09-19 15:17:51.017 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 15:17:51.018 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 15:22:17.552 | DEBUG    | __main__:get_username:187 - Checking username in session: None
+2025-09-19 15:22:17.553 | INFO     | __main__:get_username:197 - No valid session found
+2025-09-19 15:22:24.217 | INFO     | auth.authentication:validate_login:30 - Successful login for user: Tim
+2025-09-19 15:22:24.219 | INFO     | __main__:login:163 - User Tim logged in
+2025-09-19 15:22:31.069 | ERROR    | __main__:stream:326 - Request context error in generate_report: Working outside of request context.
+
+This typically means that you attempted to use functionality that needed
+an active HTTP request. Consult the documentation on testing for
+information about how to avoid this problem.

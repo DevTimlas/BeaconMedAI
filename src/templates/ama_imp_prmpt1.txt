@@ -1,0 +1,158 @@
+
+# AMA Guides 6th Edition WPI Extraction and Prediction Prompt
+
+## Objective
+Extract and structure medical impairment data from a provided medical report to predict Whole Person Impairment (WPI) percentages based on the AMA Guides to the Evaluation of Permanent Impairment, 6th Edition, with a primary focus on pulmonary impairments. Ensure precise alignment with AMA methodology for classifying and adjusting impairment levels, consolidating duplicate information, and providing a detailed rationale for all calculations.
+
+## Input Requirements
+For each case, the medical report must provide the following structured information:
+
+1. **Patient Demographics**
+   - Name: Full name if available, omit if not
+   - Age: Exact age or derived from DOB in MM/DD/YYYY format, omit if unavailable
+   - Sex: Male/Female/Other
+   - Occupation: Current or former
+   - Relevant Dates: Dates of injury, onset, treatment, or exams in MM/DD/YYYY format
+
+2. **Medical Team**
+   - Treating Physicians: List names and specialties
+   - Other Providers: List names and roles
+
+3. **Medical History**
+   - Timeline: Consolidated history of injuries, diagnoses, surgeries, and treatments
+   - Current Medications: List with dosages and frequencies
+   - Past Medical History: Relevant conditions
+
+4. **Current Status**
+   - Symptom Summary by Body System: List symptoms by system
+   - Key Abnormal Exam Findings: Include measurements
+   - Significant Diagnostic Test Results: Include test results with dates and measurements
+
+5. **Clinical Findings**
+   - **Key Factor** (select one per AMA chapter guidelines):
+     - Objective Test Results
+     - Include exact measurements, dates, and % predicted values
+   - **Non-Key Factors**:
+     - History of Clinical Presentation: Document symptoms
+     - Physical Examination: Document findings
+     - Functional History: ADL limitations, include validated self-report tools if available
+     - Clinical Studies: Supporting data
+     - Burden of Treatment Compliance (BOTC): Document treatment requirements
+
+6. **Pain Assessment** (if relevant):
+   - Type: Nociceptive/Neuropathic
+   - Duration: Acute/Chronic (>3 months)
+   - Characteristics: Describe pain
+   - Chronic Pain Syndrome (CPS) Criteria Met: Yes/No, list applicable criteria per AMA Guides
+   - Objective Evidence: Document tests
+
+## Strict Requirements
+1. **Consolidation**: Extract ONLY UNIQUE impairments, injuries, or conditions, merging duplicates into a single entry.
+2. **Impairment Details**: For each unique impairment, include:
+   - **Clinical Description**: Consolidated summary of the condition
+   - **Key Findings**: Objective test results driving the initial class
+   - **Non-Key Factors**: Subjective symptoms and physical findings with point assignments
+   - **Impact**: Combined functional limitations
+   - **AMA Reference**: Specific table and chapter
+   - **Preliminary Class and Adjustment**:
+     - Initial class based on key findings, defaulting to the middle grade (C) per the relevant AMA table
+     - Point adjustments from non-key factors
+     - Adjustments must stay within the same class
+   - **Possible WPI**: Percentage range based on the adjusted class (don't be specific, make sure it's in range of 0%-100%)
+3. **Pain Handling**: Rate pain separately only if neuropathic pain is present with objective evidence. Otherwise, include pain as a non-key factor for adjustment.
+4. **Combination**: Combine regional impairments using the Combined Values Chart before converting to WPI.
+
+## Processing Rules
+1. **Consolidation**: Merge duplicate findings, using the most recent result.
+2. **Data Retention**: Retain only the most recent and relevant data, removing redundant or outdated findings.
+3. **Objective Tests**: Explicitly include ALL objective test results as key findings; flag missing tests.
+4. **Non-Key Adjustments**: Assign point values to symptoms and physical findings based on AMA class descriptions. Calculate net points to adjust within the class.
+5. **AMA Methodology for Pulmonary Impairments**:
+   - Use key findings to determine the initial class
+   - Adjust the grade (A-E) based on non-key factors using point totals
+   - Provide the WPI range based on the adjusted class per the relevant table
+6. **Validation**:
+   - Reject predictions if:
+     - Subjective complaints lack objective correlates (per Chapter 2.4b)
+     - Pain rating exceeds 3% without neuropathic evidence
+     - Adjustments would cross class boundaries
+   - Flag cases requiring:
+     - Specialist consultation
+     - Additional testing
+7. **Terminology**: Maintain original medical terminology and flag inconsistencies.
+8. **WPI**: Final WPI should be in the range of 0% - 100%, not just a specific value
+
+## Output Format
+### CONSOLIDATED PATIENT DATA ###
+**Identification:**
+- Name: Extracted or omitted
+- Age: Extracted or omitted
+- Sex: Male/Female/Other
+- Occupation: Specific role
+- Relevant Dates: MM/DD/YYYY
+
+**Medical Team:**
+- Treating Physicians: List names and specialties
+- Other Providers: List names and roles
+
+**Medical History:**
+- Timeline: Consolidated history
+- Current Medications: List with dosages and frequencies
+- Past Medical History: Relevant conditions
+
+**Current Status:**
+- Symptom Summary by Body System: List symptoms by system
+- Key Abnormal Exam Findings: Include measurements
+- Significant Diagnostic Test Results: Include test results with dates and measurements
+
+**Impairment Analysis:**
+For each UNIQUE impairment:
+- [System/Region] [Impairment Name]:
+  - Clinical Description: Summary of the condition
+  - Key Findings: Objective test results
+  - Non-Key Factors: Subjective symptoms and physical findings with point assignments
+  - Impact: Functional limitations
+  - AMA Reference: Specific table and chapter
+  - Preliminary Class and Adjustment: Initial class and adjustments based on non-key factors
+  - Possible WPI: Percentage range
+
+**Missing Data:**
+- Critical Tests/Exams Not Performed: List missing tests
+- Needed Specialist Evaluations: List recommended consultations
+
+**JSON Summary:**
+```json
+{
+  "wpi_prediction": "XX%",
+  "rationale": {
+    "key_factor": {
+      "class": "X",
+      "grade": "X",
+      "criteria": "Description of criteria"
+    },
+    "adjustments": [
+      {"factor": "functional_history", "impact": "+X points"},
+      {"factor": "physical_exam", "impact": "-X points"},
+      {"factor": "burden_of_treatment", "impact": "+X points"}
+    ],
+    "combined_impairments": ["Description of combination"],
+    "validation_checks": [
+      "No class boundary violation",
+      "Objective findings consistent with subjective complaints",
+      "Pain rating compliant"
+    ]
+  },
+  "confidence_score": "High/Medium/Low",
+  "missing_data": ["List missing data"]
+}
+```
+
+## Notes
+- Always reference specific tables/chapters
+- Disclose limitations when data is incomplete
+- Ensure all objective test results are reported with dates and % predicted values
+- Use the Combined Values Chart for multiple impairments
+- Be very sure of numbers especially points values and all other specific values , ensure they're highly clearly accurate from the retrieved docs to avoid too many errors in output]
+- Ensure output is a well formatted markdown, do not put things that are supposed to be key points in a straight line. separation and clear markdown output is important
+- Ensure you increase your accuracy on the WPI section, as it's the most important part of the report, so prioritize it.
+- Beacon making up stuff in the report is super bad, ensure you only output highly accurate details

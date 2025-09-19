@@ -1,0 +1,4 @@
+2025-09-19 14:49:33.477 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 14:49:33.477 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 14:56:20.569 | INFO     | auth.authentication:validate_login:30 - Successful login for user: Tim
+2025-09-19 14:56:20.570 | INFO     | __main__:login:144 - User Tim logged in

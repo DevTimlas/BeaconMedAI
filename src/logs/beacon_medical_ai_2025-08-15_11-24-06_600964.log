@@ -1,0 +1,12 @@
+2025-08-15 11:24:08.453 | INFO     | __main__:main:13 - Starting BeaconMedicalAi AMA application
+2025-08-15 11:24:08.453 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-08-15 11:24:08.453 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-08-15 11:24:08.454 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore:97 - Failed to initialize vectorstore for 4th Edition: The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable
+2025-08-15 11:24:08.454 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:111 - Failed to initialize vectorstore for 4th Edition
+2025-08-15 11:24:08.454 | ERROR    | __main__:main:19 - Failed to initialize vectorstore on startup: Could not initialize vectorstore for 4th Edition
+2025-08-15 11:24:08.454 | INFO     | __main__:main:20 - Proceeding with application launch, vectorstore can be initialized later via UI
+2025-08-15 11:24:08.637 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-08-15 11:24:08.637 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-08-15 11:24:08.637 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore:97 - Failed to initialize vectorstore for 4th Edition: The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable
+2025-08-15 11:24:08.637 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:111 - Failed to initialize vectorstore for 4th Edition
+2025-08-15 11:24:08.637 | ERROR    | __main__:main:35 - Error launching application: Could not initialize vectorstore for 4th Edition

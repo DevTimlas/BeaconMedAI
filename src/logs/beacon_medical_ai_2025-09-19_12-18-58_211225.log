@@ -1,0 +1,15 @@
+2025-09-19 12:19:04.950 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 12:19:04.950 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 12:20:45.719 | INFO     | auth.authentication:validate_login:30 - Successful login for user: Tim
+2025-09-19 12:21:02.393 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 12:21:02.393 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 12:21:02.546 | INFO     | core.user_data:__init__:36 - 
+==================================================
+NEW USER SESSION CREATED
+Username: Tim
+User ID: f9f624d9-b768-41f5-ac39-cc5b13e29b9c
+==================================================
+
+2025-09-19 12:21:02.546 | INFO     | core.user_data:get_user_data:97 - Created new user data for: Tim
+2025-09-19 12:21:02.550 | ERROR    | __main__:generate:161 - Error in report generation: 'async_generator' object is not iterable
+2025-09-19 12:21:02.551 | INFO     | __main__:generate:169 - Deleted uploaded file: /var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/tmpjup12i59/AMA_Sample_Medical_Report_1.pdf

@@ -1,0 +1,45 @@
+2025-09-19 15:29:17.312 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 15:29:17.313 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 15:29:29.260 | INFO     | auth.authentication:validate_login:30 - Successful login for user: Tim
+2025-09-19 15:29:29.261 | INFO     | __main__:login:145 - User Tim logged in
+2025-09-19 15:29:36.614 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 6th Edition
+2025-09-19 15:29:36.614 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_6th
+2025-09-19 15:29:36.761 | INFO     | core.user_data:__init__:36 - 
+==================================================
+NEW USER SESSION CREATED
+Username: Tim
+User ID: 88357f54-25e1-462f-ba30-c90e30cd0e5a
+==================================================
+
+2025-09-19 15:29:36.761 | INFO     | core.user_data:get_user_data:97 - Created new user data for: Tim
+2025-09-19 15:29:36.763 | INFO     | __main__:generate:213 - Saved file: /var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/tmpjz3iltgj/AMA_Sample_Medical_Report_2.pdf, size: 56.12 KB
+2025-09-19 15:29:36.764 | INFO     | __main__:collect_file_results:69 - Processing file: /var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/tmpjz3iltgj/AMA_Sample_Medical_Report_2.pdf, size: 56.12 KB
+2025-09-19 15:29:36.764 | INFO     | processors.file_processors:process_file:33 - User Tim started processing 1 files
+2025-09-19 15:29:36.764 | INFO     | __main__:__call__:51 - Progress: Processing file (0.0/None None)
+2025-09-19 15:29:36.765 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-19 15:29:36.765 | INFO     | __main__:__call__:51 - Progress: Processing file (0.1/None None)
+2025-09-19 15:29:36.765 | INFO     | processors.file_processors:process_single_file:52 - Processing file /var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/tmpjz3iltgj/AMA_Sample_Medical_Report_2.pdf (1/1)
+2025-09-19 15:29:36.765 | INFO     | __main__:__call__:51 - Progress: Processing file (0.05/None None)
+2025-09-19 15:29:36.765 | INFO     | processors.file_processors:get_report_from_pdf:107 - Loading PDF /var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/tmpjz3iltgj/AMA_Sample_Medical_Report_2.pdf for user Tim
+2025-09-19 15:29:36.802 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-19 15:29:36.802 | INFO     | __main__:__call__:51 - Progress: Getting report (0.3/None None)
+2025-09-19 15:29:36.802 | INFO     | __main__:__call__:51 - Progress: Getting report (0.05/None None)
+2025-09-19 15:29:36.803 | INFO     | generators.report_generator:get_ama_impairment_report:55 - Generating impairment report for user Tim
+2025-09-19 15:29:36.803 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-19 15:29:36.803 | INFO     | __main__:__call__:51 - Progress: Getting report (0.1/None None)
+2025-09-19 15:29:42.988 | INFO     | __main__:__call__:51 - Progress: Getting report (0.2/None None)
+2025-09-19 15:29:42.988 | INFO     | __main__:__call__:51 - Progress: Getting report (0.3/None None)
+2025-09-19 15:29:42.988 | INFO     | utils.helpers:get_metadata_filter:267 - Starting metadata filter generation
+2025-09-19 15:29:45.556 | DEBUG    | utils.helpers:get_metadata_filter:288 - Extracted 20 terms: ['whiplash-associated disorder', 'neck pain', 'headaches', 'muscle stiffness', 'soft tissue damage', 'anterior ligament instability', 'cervical spine', 'chronic neck pain', 'instability', 'left femur fracture', 'malunion', 'gait disturbance', 'chronic ptsd', 'sleep disturbances', 'persistent nightmares', 'residual lower back pain', 'stiffness', 'ongoing discomfort', 'degenerative changes', 'lumbar spine']
+2025-09-19 15:29:45.556 | WARNING  | utils.helpers:get_metadata_filter:334 - No chapters found; using term-based filter only.
+2025-09-19 15:29:45.556 | INFO     | utils.helpers:get_metadata_filter:335 - Term-based filter: {'terms': ['whiplash-associated', 'muscle', 'gait disturbance', 'sleep disturbances', 'vehicle', 'disorder', 'ongoing discomfort', 'stiffness', 'damage', 'soft', 'instability', 'chronic neck pain', 'soft tissue damage', 'tissue', 'headaches', 'persistent nightmares', 'degenerative changes', 'muscle stiffness', 'neck pain', 'anterior ligament instability']}
+2025-09-19 15:29:45.556 | INFO     | generators.report_generator:get_ama_impairment_report:101 - Using term-based query: whiplash-associated muscle gait disturbance sleep disturbances vehicle disorder ongoing discomfort stiffness damage soft instability chronic neck pain soft tissue damage tissue headaches persistent nightmares degenerative changes muscle stiffness neck pain anterior ligament instability
+2025-09-19 15:29:45.556 | INFO     | generators.report_generator:get_ama_impairment_report:105 - Retrieving AMA content with k=4, fetch_k=20, lambda_mult=0.5 based on 131 unique words
+2025-09-19 15:29:47.078 | INFO     | generators.report_generator:get_ama_impairment_report:110 - Initially retrieved 8 documents
+2025-09-19 15:29:47.079 | INFO     | __main__:__call__:51 - Progress: Getting report (0.35/None None)
+2025-09-19 15:29:49.111 | INFO     | generators.report_generator:get_ama_impairment_report:114 - Reranked to 4 documents
+2025-09-19 15:29:49.132 | INFO     | __main__:__call__:51 - Progress: Getting report (0.4/None None)
+2025-09-19 15:29:53.175 | INFO     | __main__:__call__:51 - Progress: Getting report (0.5/None None)
+2025-09-19 15:29:53.176 | INFO     | __main__:__call__:51 - Progress: Getting report (0.6/None None)
+2025-09-19 15:29:53.917 | ERROR    | __main__:collect_file_results:100 - Error in collect_file_results: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01jppffsftegkvj0dnwkrac3x0` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 100033, Requested 7338. Please try again in 1h46m8.661999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+2025-09-19 15:29:53.938 | INFO     | __main__:generate:274 - Deleted uploaded file: /var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/tmpjz3iltgj/AMA_Sample_Medical_Report_2.pdf

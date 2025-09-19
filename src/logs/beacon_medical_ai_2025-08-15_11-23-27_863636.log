@@ -1,0 +1,12 @@
+2025-08-15 11:23:29.785 | INFO     | __main__:main:13 - Starting BeaconMedicalAi AMA application
+2025-08-15 11:23:29.785 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-08-15 11:23:29.786 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore:93 - Vectorstore directory not found: /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th. Cannot initialize vectorstore.
+2025-08-15 11:23:29.786 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore:97 - Failed to initialize vectorstore for 4th Edition: Vectorstore directory not found: /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-08-15 11:23:29.786 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:111 - Failed to initialize vectorstore for 4th Edition
+2025-08-15 11:23:29.786 | ERROR    | __main__:main:19 - Failed to initialize vectorstore on startup: Could not initialize vectorstore for 4th Edition
+2025-08-15 11:23:29.786 | INFO     | __main__:main:20 - Proceeding with application launch, vectorstore can be initialized later via UI
+2025-08-15 11:23:29.972 | INFO     | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-08-15 11:23:29.973 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore:93 - Vectorstore directory not found: /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th. Cannot initialize vectorstore.
+2025-08-15 11:23:29.973 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore:97 - Failed to initialize vectorstore for 4th Edition: Vectorstore directory not found: /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-08-15 11:23:29.973 | ERROR    | BeaconMedAI.core.vectorstore:initialize_vectorstore_for_edition:111 - Failed to initialize vectorstore for 4th Edition
+2025-08-15 11:23:29.973 | ERROR    | __main__:main:35 - Error launching application: Could not initialize vectorstore for 4th Edition

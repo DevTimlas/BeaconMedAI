@@ -1,0 +1,54 @@
+2025-09-19 17:13:36.918 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 17:13:36.918 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 17:13:52.033 | INFO     | auth.authentication:validate_login:30 - Successful login for user: Tim
+2025-09-19 17:13:52.035 | INFO     | __main__:login:177 - User Tim logged in
+2025-09-19 17:14:18.707 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 17:14:18.710 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 17:14:18.891 | INFO     | core.user_data:__init__:36 - 
+==================================================
+NEW USER SESSION CREATED
+Username: Tim
+User ID: 12d18126-5de3-4bc5-8e9a-2eaf011b6575
+==================================================
+
+2025-09-19 17:14:18.891 | INFO     | core.user_data:get_user_data:97 - Created new user data for: Tim
+2025-09-19 17:14:18.893 | INFO     | __main__:generate:245 - Saved file: /var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/tmp0rhru7sj/AMA_Sample_Medical_Report_1.pdf, size: 54.98 KB
+2025-09-19 17:14:18.894 | INFO     | __main__:collect_file_results:101 - Processing file: /var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/tmp0rhru7sj/AMA_Sample_Medical_Report_1.pdf, size: 54.98 KB
+2025-09-19 17:14:18.894 | INFO     | processors.file_processors:process_file:33 - User Tim started processing 1 files
+2025-09-19 17:14:18.894 | INFO     | __main__:__call__:83 - Progress: Processing file (0.0/None None)
+2025-09-19 17:14:18.895 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-19 17:14:18.895 | INFO     | __main__:__call__:83 - Progress: Processing file (0.1/None None)
+2025-09-19 17:14:18.895 | INFO     | processors.file_processors:process_single_file:52 - Processing file /var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/tmp0rhru7sj/AMA_Sample_Medical_Report_1.pdf (1/1)
+2025-09-19 17:14:18.896 | INFO     | __main__:__call__:83 - Progress: Processing file (0.05/None None)
+2025-09-19 17:14:18.896 | INFO     | processors.file_processors:get_report_from_pdf:107 - Loading PDF /var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/tmp0rhru7sj/AMA_Sample_Medical_Report_1.pdf for user Tim
+2025-09-19 17:14:18.963 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-19 17:14:18.963 | INFO     | __main__:__call__:83 - Progress: Getting report (0.3/None None)
+2025-09-19 17:14:18.963 | INFO     | __main__:__call__:83 - Progress: Getting report (0.05/None None)
+2025-09-19 17:14:18.964 | INFO     | generators.report_generator:get_ama_impairment_report:55 - Generating impairment report for user Tim
+2025-09-19 17:14:18.964 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-19 17:14:18.964 | INFO     | __main__:__call__:83 - Progress: Getting report (0.1/None None)
+2025-09-19 17:14:22.992 | INFO     | __main__:__call__:83 - Progress: Getting report (0.2/None None)
+2025-09-19 17:14:22.993 | INFO     | __main__:__call__:83 - Progress: Getting report (0.3/None None)
+2025-09-19 17:14:22.995 | INFO     | utils.helpers:get_metadata_filter:267 - Starting metadata filter generation
+2025-09-19 17:14:25.666 | DEBUG    | utils.helpers:get_metadata_filter:288 - Extracted 19 terms: ['traumatic brain injury', 'symptoms', 'headaches', 'dizziness', 'cognitive difficulties', 'mri', 'neurological assessment', 'fractured right clavicle', 'persistent pain', 'lumbar disc herniation', 'disc protrusion', 'pain', 'lower extremities', 'physical therapy', 'pain management', 'psychological trauma', 'post-accident anxiety', 'depression', 'panic attacks']
+2025-09-19 17:14:25.667 | WARNING  | utils.helpers:get_metadata_filter:334 - No chapters found; using term-based filter only.
+2025-09-19 17:14:25.667 | INFO     | utils.helpers:get_metadata_filter:335 - Term-based filter: {'terms': ['mri', 'lumbar disc herniation', 'difficulties', 'persistent pain', 'neurological', 'fractured right clavicle', 'traumatic brain injury', 'panic attacks', 'traumatic', 'lower extremities', 'pain', 'brain', 'moderate', 'post-accident anxiety', 'symptoms', 'physical therapy', 'disc protrusion', 'pain management', 'misalignment', 'mild']}
+2025-09-19 17:14:25.667 | INFO     | generators.report_generator:get_ama_impairment_report:101 - Using term-based query: mri lumbar disc herniation difficulties persistent pain neurological fractured right clavicle traumatic brain injury panic attacks traumatic lower extremities pain brain moderate post-accident anxiety symptoms physical therapy disc protrusion pain management misalignment mild
+2025-09-19 17:14:25.667 | INFO     | generators.report_generator:get_ama_impairment_report:105 - Retrieving AMA content with k=3, fetch_k=15, lambda_mult=0.5 based on 112 unique words
+2025-09-19 17:14:27.325 | INFO     | generators.report_generator:get_ama_impairment_report:110 - Initially retrieved 6 documents
+2025-09-19 17:14:27.325 | INFO     | __main__:__call__:83 - Progress: Getting report (0.35/None None)
+2025-09-19 17:14:28.947 | INFO     | generators.report_generator:get_ama_impairment_report:114 - Reranked to 3 documents
+2025-09-19 17:14:28.956 | INFO     | __main__:__call__:83 - Progress: Getting report (0.4/None None)
+2025-09-19 17:14:36.633 | INFO     | __main__:__call__:83 - Progress: Getting report (0.5/None None)
+2025-09-19 17:14:36.634 | INFO     | __main__:__call__:83 - Progress: Getting report (0.6/None None)
+2025-09-19 17:15:00.853 | INFO     | generators.report_generator:get_ama_impairment_report:153 - Generated impairment report for user Tim
+2025-09-19 17:15:00.855 | INFO     | __main__:__call__:83 - Progress: Getting report (0.9/None None)
+2025-09-19 17:15:00.873 | INFO     | __main__:__call__:83 - Progress: Getting report (1.0/None None)
+2025-09-19 17:15:00.909 | INFO     | __main__:__call__:83 - Progress: Getting report (1.0/None None)
+2025-09-19 17:15:00.909 | INFO     | __main__:__call__:83 - Progress: Processing file (0.9/None None)
+2025-09-19 17:15:00.910 | INFO     | __main__:__call__:83 - Progress: Getting report (0.1/None None)
+2025-09-19 17:15:00.911 | INFO     | generators.combiner:get_combine_reports:30 - Combining reports for user Tim
+2025-09-19 17:15:00.911 | INFO     | core.user_data:get_user_data:99 - Retrieved existing user data for: Tim
+2025-09-19 17:15:00.938 | INFO     | generators.combiner:get_combine_reports:45 - Similarity with previous input 1: 0.4532
+2025-09-19 17:15:00.938 | INFO     | __main__:__call__:83 - Progress: Getting report (0.2/None None)
+2025-09-19 17:15:00.939 | INFO     | __main__:__call__:83 - Progress: Getting report (0.3/None None)

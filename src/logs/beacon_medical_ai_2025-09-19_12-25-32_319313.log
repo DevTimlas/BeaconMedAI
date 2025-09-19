@@ -1,0 +1,16 @@
+2025-09-19 12:25:36.062 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 12:25:36.062 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 12:26:04.369 | INFO     | auth.authentication:validate_login:30 - Successful login for user: Tim
+2025-09-19 12:26:20.158 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 12:26:20.159 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 12:26:20.288 | INFO     | core.user_data:__init__:36 - 
+==================================================
+NEW USER SESSION CREATED
+Username: Tim
+User ID: 00542079-da90-410b-8256-0e759a24db82
+==================================================
+
+2025-09-19 12:26:20.288 | INFO     | core.user_data:get_user_data:97 - Created new user data for: Tim
+2025-09-19 12:26:20.290 | INFO     | processors.file_processors:process_file:33 - User Tim started processing 1 files
+2025-09-19 12:26:20.291 | ERROR    | __main__:generate:172 - Error in report generation: 'NoneType' object is not callable
+2025-09-19 12:26:20.291 | INFO     | __main__:generate:180 - Deleted uploaded file: /var/folders/gg/t11kyrr16ndcf_c64k2qtbr40000gn/T/tmpetsxfplu/AMA_Sample_Medical_Report_2.pdf

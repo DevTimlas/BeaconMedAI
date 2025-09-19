@@ -1,0 +1,4 @@
+2025-09-19 10:20:59.770 | INFO     | __main__:main:13 - Starting BeaconMedicalAi AMA application
+2025-09-19 10:20:59.770 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 10:20:59.770 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 10:20:59.972 | ERROR    | __main__:main:35 - Error launching application: [Errno 2] No such file or directory: 'style.css'

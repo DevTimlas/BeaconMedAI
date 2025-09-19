@@ -1,0 +1,6 @@
+2025-09-19 15:06:52.978 | INFO     | core.vectorstore:initialize_vectorstore_for_edition:103 - Initializing vectorstore for 4th Edition
+2025-09-19 15:06:52.978 | INFO     | core.vectorstore:initialize_vectorstore:86 - Loading existing vectorstore from /Users/mac/fivv/drmichelrice/BeaconMedAI/src/data/vectorstore_8k_batch_4th
+2025-09-19 15:07:47.389 | DEBUG    | __main__:get_username:186 - Checking username in session: None
+2025-09-19 15:07:47.391 | INFO     | __main__:get_username:196 - No valid session found
+2025-09-19 15:07:52.420 | INFO     | auth.authentication:validate_login:30 - Successful login for user: Tim
+2025-09-19 15:07:52.421 | INFO     | __main__:login:162 - User Tim logged in

@@ -341,7 +341,22 @@ def generate_report():
                             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                             
                             try:
-                                file.save(file_path)
+                                # Ensure file stream is at the beginning and not closed
+                                if hasattr(file, 'stream'):
+                                    file.stream.seek(0)
+                                    
+                                # Read file content into memory first to avoid I/O issues
+                                file_content = file.read()
+                                
+                                if not file_content:
+                                    logging.error(f"File {filename} appears to be empty")
+                                    yield f"data: {json.dumps({'report': f'Error: File {filename} is empty'})}\n\n"
+                                    return
+                                
+                                # Write content to file using binary mode
+                                with open(file_path, 'wb') as f:
+                                    f.write(file_content)
+                                
                                 temp_files_to_cleanup.append(file_path)
                                 
                                 if os.path.exists(file_path):
@@ -352,8 +367,11 @@ def generate_report():
                                     logging.error(f"File was not saved properly: {file_path}")
                                     yield f"data: {json.dumps({'report': f'Error: Failed to save file {filename}'})}\n\n"
                                     return
+                                    
                             except Exception as e:
                                 logging.error(f"Error saving file {filename}: {str(e)}")
+                                logging.error(f"File object type: {type(file)}")
+                                logging.error(f"Has stream attribute: {hasattr(file, 'stream')}")
                                 yield f"data: {json.dumps({'report': f'Error saving file {filename}: {str(e)}'})}\n\n"
                                 return
                         else:
@@ -537,7 +555,22 @@ def generate_rebuttal():
                             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                             
                             try:
-                                file.save(file_path)
+                                # Ensure file stream is at the beginning and not closed
+                                if hasattr(file, 'stream'):
+                                    file.stream.seek(0)
+                                    
+                                # Read file content into memory first to avoid I/O issues
+                                file_content = file.read()
+                                
+                                if not file_content:
+                                    logging.error(f"Rebuttal file {filename} appears to be empty")
+                                    yield f"data: {json.dumps({'rebuttal': f'Error: File {filename} is empty'})}\n\n"
+                                    return
+                                
+                                # Write content to file using binary mode
+                                with open(file_path, 'wb') as f:
+                                    f.write(file_content)
+                                
                                 temp_files_to_cleanup.append(file_path)
                                 
                                 if os.path.exists(file_path):
@@ -548,8 +581,11 @@ def generate_rebuttal():
                                     logging.error(f"Rebuttal file was not saved properly: {file_path}")
                                     yield f"data: {json.dumps({'rebuttal': f'Error: Failed to save file {filename}'})}\n\n"
                                     return
+                                    
                             except Exception as e:
                                 logging.error(f"Error saving rebuttal file {filename}: {str(e)}")
+                                logging.error(f"File object type: {type(file)}")
+                                logging.error(f"Has stream attribute: {hasattr(file, 'stream')}")
                                 yield f"data: {json.dumps({'rebuttal': f'Error saving file {filename}: {str(e)}'})}\n\n"
                                 return
                         else:
@@ -558,7 +594,7 @@ def generate_rebuttal():
                             yield f"data: {json.dumps({'rebuttal': f'Error: {error_msg}'})}\n\n"
                             return
 
-                    # Process uploaded files for rebuttal
+                    # Handle file uploads for rebuttal
                     if file_paths:
                         logging.info(f"Processing {len(file_paths)} files for rebuttal")
                         partial_results = asyncio.run(collect_file_results(file_paths, username, DummyProgress(), GENERATION_CANCELLED))
@@ -721,7 +757,21 @@ def process_chat_files():
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 
                 try:
-                    file.save(file_path)
+                    # Ensure file stream is at the beginning and not closed
+                    if hasattr(file, 'stream'):
+                        file.stream.seek(0)
+                        
+                    # Read file content into memory first to avoid I/O issues
+                    file_content = file.read()
+                    
+                    if not file_content:
+                        logging.error(f"Chat file {filename} appears to be empty")
+                        continue
+                    
+                    # Write content to file using binary mode
+                    with open(file_path, 'wb') as f:
+                        f.write(file_content)
+                    
                     temp_files_to_cleanup.append(file_path)
                     
                     if os.path.exists(file_path):
@@ -740,6 +790,8 @@ def process_chat_files():
                         
                 except Exception as e:
                     logging.error(f"Error processing chat file {filename}: {str(e)}")
+                    logging.error(f"File object type: {type(file)}")
+                    logging.error(f"Has stream attribute: {hasattr(file, 'stream')}")
                     continue
 
         if all_pdf_content:

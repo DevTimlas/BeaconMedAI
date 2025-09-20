@@ -32,3 +32,6 @@ uvicorn
 fastapi
 httpx
 pydantic
+rank_bm25
+chromadb
+aiofiles

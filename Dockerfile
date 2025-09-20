@@ -27,4 +27,5 @@ ENV PYTHONUNBUFFERED=1 \
     PORT=80
 
 # Run Flask app in production with Gunicorn
-CMD ["gunicorn", "--workers", "4", "--timeout", "120", "--bind", "0.0.0.0:80", "app:app"]
+# CMD ["gunicorn", "--workers", "4", "--timeout", "120", "--bind", "0.0.0.0:80", "app:app"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80"]

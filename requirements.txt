@@ -28,3 +28,7 @@ timeout_decorator
 Werkzeug
 gunicorn
 flask_session
+uvicorn
+fastapi
+httpx
+pydantic
